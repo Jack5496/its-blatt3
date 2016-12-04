@@ -23,7 +23,7 @@ void last_wish(int i){
            printf("Manuel beendet\n");
            if(s > 0) //nur falls ein socket offen ist
            {
-               close(s); //schließe diesen
+               die(s); //schließe diesen
                printf("Socket geschlossen\n");
            }
            exit(1); //schließe
