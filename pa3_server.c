@@ -1,8 +1,8 @@
-#include <stdlib.h>    //malloc
-#include <string.h>    //für strings
 #include <signal.h> //Damit ich Signale abfangen kann
-#include <stdio.h>
 
+#include<stdio.h> //printf
+#include<string.h> //memset
+#include<stdlib.h> //exit(0);
 #include<arpa/inet.h>
 #include<sys/socket.h>
 
