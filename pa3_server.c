@@ -48,10 +48,9 @@ int main(int argc, char **argv){
         server_port = atoi(argv[1]);
 	
 	  int nBytes;
-	  struct sockaddr_in serverAddr, clientAddr;
+	  struct sockaddr_in serverAddr;
 	  struct sockaddr_storage serverStorage;
-	  socklen_t addr_size, client_addr_size;
-	  int i;
+	  socklen_t addr_size;
 
 	  /*Create UDP socket*/
 	  udpSocket = socket(PF_INET, SOCK_DGRAM, 0);
@@ -71,6 +70,7 @@ int main(int argc, char **argv){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
 	    nBytes = recvfrom(udpSocket,buffer,1024,0,(struct sockaddr *)&serverStorage, &addr_size);
+		printf("Bytes revieved: %i\n, nBytes);
 	  }
        
                 
