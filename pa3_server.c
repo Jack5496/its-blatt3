@@ -10,17 +10,8 @@ int server_port = 80;
 int debug = 1;
 int keep_alive = 1;
 
-struct sockaddr_in si_me, si_other;
-     
-int s, slen = sizeof(si_other) , recv_len;
-
 char buffer[65536];
-
-void die(char *s)
-{
-    perror(s);
-    exit(1);
-}
+int udpSocket;
 
 /**
 * Letzer aufruf um alles wichtige zu schließen
@@ -29,8 +20,8 @@ void last_wish(int i){
            printf("Manuel beendet\n");
            if(s > 0) //nur falls ein socket offen ist
            {
-		close(s);
-               die("Socket geschlossen\n");
+	       close(udpSocket);
+               printf("Socket geschlossen\n");
            }
            exit(1); //schließe
 }
@@ -55,46 +46,39 @@ int main(int argc, char **argv){
     if(argc==needed_arguments){       
         server_port = atoi(argv[1]);
 	
-	 	    
-    //create a UDP socket
-    if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-    {
-        die("socket");
-    }
-     
-    // zero out the structure
-    memset((char *) &si_me, 0, sizeof(si_me));
-     
-    si_me.sin_family = AF_INET;
-    si_me.sin_port = htons(server_port);
-    si_me.sin_addr.s_addr = htonl(INADDR_ANY);
-     
-    //bind socket to port
-    if( bind(s , (struct sockaddr*)&si_me, sizeof(si_me) ) == -1)
-    {
-        die("bind");
-    }
-     
-    //keep listening for data
-    while(keep_alive)
-    {
-        printf("Waiting for data...");
-        fflush(stdout);
-         
-        //try to receive some data, this is a blocking call
-        if ((recv_len = recvfrom(s, buffer, 65536, 0, (struct sockaddr *) &si_other, &slen)) == -1)
-        {
-            die("recvfrom()");
-        }
-         
-        //print details of the client/peer and the data received
-        printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-        printf("Data: %s\n" , buffer);
-        
-    }
- 
-    close(s);
-        
+	  int nBytes;
+	  struct sockaddr_in serverAddr, clientAddr;
+	  struct sockaddr_storage serverStorage;
+	  socklen_t addr_size, client_addr_size;
+	  int i;
+
+	  /*Create UDP socket*/
+	  udpSocket = socket(PF_INET, SOCK_DGRAM, 0);
+
+	  /*Configure settings in address struct*/
+	  serverAddr.sin_family = AF_INET;
+	  serverAddr.sin_port = htons(server_port);
+	  serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
+
+	  /*Bind socket with address struct*/
+	  bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+
+	  /*Initialize size variable to be used later on*/
+	  addr_size = sizeof serverStorage;
+
+	  while(keep_alive){
+	    /* Try to receive any incoming UDP datagram. Address and port of 
+	      requesting client will be stored on serverStorage variable */
+	    nBytes = recvfrom(udpSocket,buffer,1024,0,(struct sockaddr *)&serverStorage, &addr_size);
+
+	    /*Convert message received to uppercase*/
+	    for(i=0;i<nBytes-1;i++)
+	      buffer[i] = toupper(buffer[i]);
+
+	    /*Send uppercase message back to client, using serverStorage as the address*/
+	    sendto(udpSocket,buffer,nBytes,0,(struct sockaddr *)&serverStorage,addr_size);
+	  }
        
                 
     }
