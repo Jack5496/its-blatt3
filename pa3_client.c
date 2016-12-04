@@ -38,7 +38,7 @@ int main(int argc, char **argv){
         
     }
     else{
-        printf('usage: ./pa3_client SERVER_ADRESS SERVER_PORT USERNAME "Message to encypt" \n');
+        printf("usage: ./pa3_client SERVER_ADRESS SERVER_PORT USERNAME \"Message to encypt\" \n");
     }
  
     return 0;
