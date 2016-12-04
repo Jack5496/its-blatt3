@@ -16,7 +16,7 @@ int s, slen = sizeof(si_other) , recv_len;
 
 char buffer[65536];
 
-void die(char s)
+void die(char *s)
 {
     perror(s);
     exit(1);
