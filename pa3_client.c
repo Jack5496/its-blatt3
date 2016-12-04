@@ -33,7 +33,7 @@ int main(int argc, char **argv){
             printf("Message: %s\n", message);
         }
      
-     
+     //Kleiner UDP Client http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
      
      int clientSocket, nBytes;
      
