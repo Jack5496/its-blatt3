@@ -9,7 +9,7 @@
 
 #include <signal.h> //Damit ich Signale abfangen kann
 
-int server_port;
+int server_port = 80;
 int debug = 1;
 int listen = 1;
 
@@ -48,15 +48,14 @@ int main(int argc, char **argv){
     if(argc==needed_arguments){       
            // Einfacher UDP Server https://www.cs.utah.edu/~swalton/listings/sockets/programs/part1/chap4/udp-server.c    
            
-           int sd;
-	int server_port=80;
+        int sd;
 	struct sockaddr_in addr;
         
-           port = atoi(argv[1]);
+        server_port = atoi(argv[1]);
 	sd = socket(PF_INET, SOCK_DGRAM, 0);
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
+	addr.sin_port = htons(server_port);
 	addr.sin_addr.s_addr = INADDR_ANY;
 	if ( bind(sd, (struct sockaddr*)&addr, sizeof(addr)) != 0 )
 		perror("bind");
