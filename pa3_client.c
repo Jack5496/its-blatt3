@@ -27,7 +27,7 @@ int main(int argc, char **argv){
      
         if(debug){
             printf("Server Adress: %s\n", server_adress);
-            printf("Server Port: %s\n", server_port);
+            printf("Server Port: %i\n", server_port);
             printf("Username: %s\n", username);
             printf("Message: %s\n", message);
         }
