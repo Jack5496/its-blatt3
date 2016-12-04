@@ -16,7 +16,13 @@ char username[65536];
 char message[65536];
 int debug = 1;
 
-#define SIZE 1024
+
+#define KEYRING_DIR "/var/tmp/mycrypto"
+
+#define SENTENCE "I swear it is true"
+
+#define MAXLEN 4096
+
 
 char private_key[65536];
  
