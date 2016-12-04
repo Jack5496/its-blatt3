@@ -9,10 +9,6 @@ char message[65536];
 int debug = 1;
 
 char private_key[65536];
-
-int check_parameters();
-int load_private_key();
-
  
 int main(int argc, char **argv){
     int needed_arguments = 1; //programm self
@@ -33,8 +29,6 @@ int main(int argc, char **argv){
             printf("Username: %s\n", username);
             printf("Message: %s\n", message);
         }
-        
-        load_private_key();
         
     }
     else{
