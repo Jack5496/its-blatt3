@@ -8,19 +8,22 @@
 
 int server_port = 80;
 int debug = 1;
-int listen = 1;
+int keep_alive = 1;
 
-int sock_raw; // erstelle unseren socket den Wir brauchen
+struct sockaddr_in si_me, si_other;
+     
+int s, slen = sizeof(si_other) , recv_len;
+
 char buffer[65536];
 
 /**
 * Letzer aufruf um alles wichtige zu schließen
 */
-void last_wish(int s){
+void last_wish(int i){
            printf("Manuel beendet\n");
-           if(sock_raw > 0) //nur falls ein socket offen ist
+           if(s > 0) //nur falls ein socket offen ist
            {
-               close(sock_raw); //schließe diesen
+               close(s); //schließe diesen
                printf("Socket geschlossen\n");
            }
            exit(1); //schließe
@@ -51,14 +54,7 @@ int main(int argc, char **argv){
     if(argc==needed_arguments){       
         server_port = atoi(argv[1]);
 	
-	    
-	    
-	    
-	    
-	    struct sockaddr_in si_me, si_other;
-     
-    int s, slen = sizeof(si_other) , recv_len;
-	    
+	 	    
     //create a UDP socket
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
     {
@@ -79,7 +75,7 @@ int main(int argc, char **argv){
     }
      
     //keep listening for data
-    while(listen)
+    while(keep_alive)
     {
         printf("Waiting for data...");
         fflush(stdout);
