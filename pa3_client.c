@@ -5,8 +5,10 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#include <gpgme.h>
-#include <locale.h>
+#include <gpgme.h>   /* gpgme             */
+#include <unistd.h>  /* write             */
+#include <errno.h>   /* errno             */
+#include <locale.h>  /* locale support    */
 
 char server_adress[65536];
 int server_port = 80;
