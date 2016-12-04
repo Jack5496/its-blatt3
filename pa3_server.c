@@ -16,6 +16,12 @@ int s, slen = sizeof(si_other) , recv_len;
 
 char buffer[65536];
 
+void die(char *s)
+{
+    perror(s);
+    exit(1);
+}
+
 /**
 * Letzer aufruf um alles wichtige zu schließen
 */
@@ -29,11 +35,6 @@ void last_wish(int i){
            exit(1); //schließe
 }
 
-void die(char *s)
-{
-    perror(s);
-    exit(1);
-}
 
 int main(int argc, char **argv){
    //Handlet aktivierung für STRG+C
