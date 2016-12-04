@@ -9,7 +9,7 @@
 
 #include <signal.h> //Damit ich Signale abfangen kann
 
-char server_port[65536];
+int server_port;
 int debug = 1;
 int listen = 1;
 
@@ -45,31 +45,30 @@ int main(int argc, char **argv){
     int needed_arguments = 1; //programm self
     needed_arguments++; //Server Port
  
-    if(argc==needed_arguments){
-        strncpy(server_port, argv[1], sizeof server_port);
+    if(argc==needed_arguments){       
+           // Einfacher UDP Server https://www.cs.utah.edu/~swalton/listings/sockets/programs/part1/chap4/udp-server.c    
+           
+           int sd;
+	int server_port=80;
+	struct sockaddr_in addr;
         
-       //Einfacher USP Server https://www.abc.se/~m6695/udp.html
-        
-       struct sockaddr_in si_me, si_other;
-       int s, slen=sizeof(si_other);
-       if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1){
-            return 1;
-       }
- 
-       memset((char *) &si_me, 0, sizeof(si_me));
-       si_me.sin_family = AF_INET;
-       si_me.sin_port = htons(PORT);
-       si_me.sin_addr.s_addr = htonl(INADDR_ANY);
-       if (bind(s, &si_me, sizeof(si_me))==-1){
-           return 1;
-       }
-        
-        while(listen){
-           if (recvfrom(s, buffer, 65536, 0, &si_other, &slen)==-1){
-                return 1;
-           }
-            printf("Received packet from %s:%d\nData: %s\n\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buffer);
-        }   
+           port = atoi(argv[1]);
+	sd = socket(PF_INET, SOCK_DGRAM, 0);
+	bzero(&addr, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	addr.sin_addr.s_addr = INADDR_ANY;
+	if ( bind(sd, (struct sockaddr*)&addr, sizeof(addr)) != 0 )
+		perror("bind");
+	while (listen)
+	{	int bytes, addr_len=sizeof(addr);
+
+		bytes = recvfrom(sd, buffer, sizeof(buffer), 0, (struct sockaddr*)&addr, &addr_len);
+		printf("msg from %s:%d (%d bytes)\n", inet_ntoa(addr.sin_addr),
+						ntohs(addr.sin_port), bytes);
+		
+            
+	}
         
         if(debug){
             printf("Starting on Port: %s\n", server_port);
