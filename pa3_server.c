@@ -13,6 +13,7 @@ int debug = 1;
 int keep_alive = 1;
 
 char buffer[65536];
+char server_adress[] = "127.0.0.1";
 int udpSocket;
 
 /**
@@ -61,7 +62,7 @@ int main(int argc, char **argv){
 	  /*Configure settings in address struct*/
 	  serverAddr.sin_family = AF_INET;
 	  serverAddr.sin_port = htons(server_port);
-	  serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	  serverAddr.sin_addr.s_addr = inet_addr(server_adress);
 	  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
 
 	  /*Bind socket with address struct*/
