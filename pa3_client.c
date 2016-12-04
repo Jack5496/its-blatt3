@@ -1,8 +1,9 @@
-#include<stdlib.h>    //malloc
+#include <stdlib.h>    //malloc
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 char server_adress[65536];
 int server_port = 80;
