@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
 	    nBytes = recvfrom(udpSocket,buffer,1024,0,(struct sockaddr *)&serverStorage, &addr_size);
-	    printf("Message revieved: %s\n", buffer);
+	    printf("Revieved %i Bytes, with Message: %s\n", nBytes,buffer);
 	  }
        
                 
