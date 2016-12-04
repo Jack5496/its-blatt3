@@ -16,7 +16,7 @@ int s, slen = sizeof(si_other) , recv_len;
 
 char buffer[65536];
 
-void die(char *s)
+void die(char s)
 {
     perror(s);
     exit(1);
@@ -29,8 +29,8 @@ void last_wish(int i){
            printf("Manuel beendet\n");
            if(s > 0) //nur falls ein socket offen ist
            {
-               die(s); //schließe diesen
-               printf("Socket geschlossen\n");
+		close(s);
+               die("Socket geschlossen\n");
            }
            exit(1); //schließe
 }
