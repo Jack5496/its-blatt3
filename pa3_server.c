@@ -51,7 +51,7 @@ int main(int argc, char **argv){
        //Einfacher USP Server https://www.abc.se/~m6695/udp.html
         
        struct sockaddr_in si_me, si_other;
-       int s, i, slen=sizeof(si_other);
+       int s, slen=sizeof(si_other);
        if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1){
             return 1;
        }
@@ -77,7 +77,7 @@ int main(int argc, char **argv){
                 
     }
     else{
-        printf('usage: ./pa3_server SERVER_PORT \n');
+        printf("usage: ./pa3_server SERVER_PORT \n");
     }
   
     return 0;
