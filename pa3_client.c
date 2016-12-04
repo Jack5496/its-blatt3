@@ -73,107 +73,93 @@ int main(int argc, char **argv){
      
      
      
-     
-     
-     
-     
-     char *p;
-   char buf[SIZE];
-   size_t read_bytes;
-   int tmp;
-   gpgme_ctx_t ceofcontext;
-   gpgme_error_t err;
-   gpgme_data_t data;
+  gpgme_error_t error;
+  gpgme_engine_info_t info;
+  gpgme_ctx_t context;
+  gpgme_key_t recipients[2] = {NULL, NULL};
+  gpgme_data_t clear_text, encrypted_text;
+  gpgme_encrypt_result_t  result;
+  gpgme_user_id_t user;
+  char *buffer;
+  ssize_t nbytes;
 
-   gpgme_engine_info_t enginfo;
+  /* Initializes gpgme */
+  gpgme_check_version (NULL);
+  
+  /* Initialize the locale environment.  */
+  setlocale (LC_ALL, "");
+  gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+#ifdef LC_MESSAGES
+  gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
+#endif
 
-   /* The function `gpgme_check_version' must be called before any other
-    * function in the library, because it initializes the thread support
-    * subsystem in GPGME. (from the info page) */
-   setlocale (LC_ALL, "");
-   p = (char *) gpgme_check_version(NULL);
-   printf("version=%s\n",p);
-   /* set locale, because tests do also */
-   gpgme_set_locale(NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+  error = gpgme_new(&context);
+  fail_if_err(error);
+  /* Setting the output type must be done at the beginning */
+  gpgme_set_armor(context, 1);
 
-   /* check for OpenPGP support */
-   err = gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
-   if(err != GPG_ERR_NO_ERROR) return 1;
+  /* Check OpenPGP */
+  error = gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
+  fail_if_err(error);
+  error = gpgme_get_engine_info (&info);
+  fail_if_err(error);
+  while (info && info->protocol != gpgme_get_protocol (context)) {
+    info = info->next;
+  }  
+  /* TODO: we should test there *is* a suitable protocol */
+  fprintf (stderr, "Engine OpenPGP %s is installed at %s\n", info->version,
+	   info->file_name); /* And not "path" as the documentation says */
 
-   p = (char *) gpgme_get_protocol_name(GPGME_PROTOCOL_OpenPGP);
-   printf("Protocol name: %s\n",p);
+  /* Initializes the context */
+  error = gpgme_ctx_set_engine_info (context, GPGME_PROTOCOL_OpenPGP, NULL,
+				     KEYRING_DIR);
+  fail_if_err(error);
 
-   /* get engine information */
-   err = gpgme_get_engine_info(&enginfo);
-   if(err != GPG_ERR_NO_ERROR) return 2;
-   printf("file=%s, home=%s\n",enginfo->file_name,enginfo->home_dir);
+  error = gpgme_op_keylist_start(context, "John Smith", 1);
+  fail_if_err(error);
+  error = gpgme_op_keylist_next(context, &recipients[0]);
+  fail_if_err(error);
+  error = gpgme_op_keylist_end(context);
+  fail_if_err(error);
 
-   /* create our own context */
-   err = gpgme_new(&ceofcontext);
-   if(err != GPG_ERR_NO_ERROR) return 3;
+  user = recipients[0]->uids;
+  printf("Encrypting for %s <%s>\n", user->name, user->email);
 
-   /* set protocol to use in our context */
-   err = gpgme_set_protocol(ceofcontext,GPGME_PROTOCOL_OpenPGP);
-   if(err != GPG_ERR_NO_ERROR) return 4;
+  /* Prepare the data buffers */
+  error = gpgme_data_new_from_mem(&clear_text, SENTENCE, strlen(SENTENCE), 1);
+  fail_if_err(error);
+  error = gpgme_data_new(&encrypted_text);
+  fail_if_err(error); 
 
-   /* set engine info in our context; I changed it for ceof like this:
+  /* Encrypt */
+  error = gpgme_op_encrypt(context, recipients, 
+			   GPGME_ENCRYPT_ALWAYS_TRUST, clear_text, encrypted_text);
+  fail_if_err(error);
+  result = gpgme_op_encrypt_result(context);
+  if (result->invalid_recipients)
+    {
+      fprintf (stderr, "Invalid recipient found: %s\n",
+	       result->invalid_recipients->fpr);
+      exit (1);
+    }
 
-   err = gpgme_ctx_set_engine_info (ceofcontext, GPGME_PROTOCOL_OpenPGP,
-               "/usr/bin/gpg","/home/user/nico/.ceof/gpg/");
-
-      but I'll use standard values for this example: */
-
-   err = gpgme_ctx_set_engine_info (ceofcontext, GPGME_PROTOCOL_OpenPGP,
-               enginfo->file_name,enginfo->home_dir);
-   if(err != GPG_ERR_NO_ERROR) return 5;
-
-   /* do ascii armor data, so output is readable in console */
-   gpgme_set_armor(ceofcontext, 1);
-
-   /* create buffer for data exchange with gpgme*/
-   err = gpgme_data_new(&data);
-   if(err != GPG_ERR_NO_ERROR) return 6;
-
-   /* set encoding for the buffer... */
-   err = gpgme_data_set_encoding(data,GPGME_DATA_ENCODING_ARMOR);
-   if(err != GPG_ERR_NO_ERROR) return 7;
-
-   /* verify encoding: not really needed */
-   tmp = gpgme_data_get_encoding(data);
-   if(tmp == GPGME_DATA_ENCODING_ARMOR) {
-      printf("encode ok\n");
-   } else {
-      printf("encode broken\n");
-   }
-
-   /* with NULL it exports all public keys */
-   err = gpgme_op_export(ceofcontext,NULL,0,data);
-   if(err != GPG_ERR_NO_ERROR) return 8;
-
-   read_bytes = gpgme_data_seek (data, 0, SEEK_END);
-   printf("end is=%d\n",read_bytes);
-   if(read_bytes == -1) {
-      p = (char *) gpgme_strerror(errno);
-      printf("data-seek-err: %s\n",p);
-      return 9;
-   }
-   read_bytes = gpgme_data_seek (data, 0, SEEK_SET);
-   printf("start is=%d (should be 0)\n",read_bytes);
-
-   /* write keys to stderr */
-   while ((read_bytes = gpgme_data_read (data, buf, SIZE)) > 0) {
-      write(2,buf,read_bytes);
-   }
-   /* append \n, so that there is really a line feed */
-   write(2,"\n",1);
-
-   /* free data */
-   gpgme_data_release(data);
-
-   /* free context */
-   gpgme_release(ceofcontext);
-     
-     
+  nbytes = gpgme_data_seek (encrypted_text, 0, SEEK_SET);
+  if (nbytes == -1) {
+    fprintf (stderr, "%s:%d: Error in data seek: ",			
+	     __FILE__, __LINE__);
+    perror("");
+    exit (1);					
+    }  
+  buffer = malloc(MAXLEN);
+  nbytes = gpgme_data_read(encrypted_text, buffer, MAXLEN);
+  if (nbytes == -1) {
+    fprintf (stderr, "%s:%d: %s\n",			
+	     __FILE__, __LINE__, "Error in data read");
+    exit (1);					
+  }
+  buffer[nbytes] = '\0';
+  printf("Encrypted text (%i bytes):\n%s\n", (int)nbytes, buffer);
+  /* OK */
      
      
      
