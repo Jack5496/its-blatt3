@@ -34,7 +34,7 @@ int main(int argc, char **argv){
      
      
      
-     int clientSocket nBytes;
+     int clientSocket, nBytes;
      
      struct sockaddr_in serverAddr;
      socklen_t addr_size;
