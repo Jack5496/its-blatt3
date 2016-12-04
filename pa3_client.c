@@ -1,6 +1,8 @@
-#include<stdio.h> //For standard things
 #include<stdlib.h>    //malloc
-#include<string.h>    //für strings
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h>
 
 char server_adress[65536];
 char server_port[65536];
@@ -29,6 +31,38 @@ int main(int argc, char **argv){
             printf("Username: %s\n", username);
             printf("Message: %s\n", message);
         }
+     
+     
+     
+     int clientSocket, portNum, nBytes;
+     
+     struct sockaddr_in serverAddr;
+     socklen_t addr_size;
+
+     /*Create UDP socket*/
+     clientSocket = socket(PF_INET, SOCK_DGRAM, 0);
+
+     /*Configure settings in address struct*/
+     serverAddr.sin_family = AF_INET;
+     serverAddr.sin_port = htons(server_port);
+     serverAddr.sin_addr.s_addr = inet_addr(server_adress);
+     memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
+
+     /*Initialize size variable to be used later on*/
+     addr_size = sizeof serverAddr;
+
+     while(1){
+       nBytes = strlen(message) + 1;
+
+       /*Send message to server*/
+       sendto(clientSocket,messages,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
+
+     }
+     
+     
+     
+     
+     
         
     }
     else{
