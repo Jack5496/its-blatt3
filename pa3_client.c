@@ -5,6 +5,9 @@
 #include <string.h>
 #include <arpa/inet.h>
 
+#include <locale.h>
+#include <gpgme.h>
+
 char server_adress[65536];
 int server_port = 80;
 char username[65536];
