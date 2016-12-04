@@ -5,7 +5,7 @@
 #include <string.h>
 
 char server_adress[65536];
-char server_port[65536];
+int server_port = 80;
 char username[65536];
 char message[65536];
 int debug = 1;
@@ -21,7 +21,7 @@ int main(int argc, char **argv){
  
     if(argc==needed_arguments){
         strncpy(server_adress, argv[1], sizeof server_adress);
-        strncpy(server_port, argv[2], sizeof server_port);
+        server_port = atoi(argv[2]);
         strncpy(username, argv[3], sizeof username);
         strncpy(message, argv[4], sizeof message);
      
