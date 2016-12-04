@@ -16,6 +16,8 @@ char username[65536];
 char message[65536];
 int debug = 1;
 
+char private_key[65536];
+
 
 #define KEYRING_DIR "/var/tmp/mycrypto"
 
@@ -24,7 +26,19 @@ int debug = 1;
 #define MAXLEN 4096
 
 
-char private_key[65536];
+#define fail_if_err(err)					\
+  do								\
+    {								\
+      if (err)							\
+        {							\
+          fprintf (stderr, "%s:%d: %s: %s\n",			\
+                   __FILE__, __LINE__, gpgme_strsource (err),	\
+		   gpgme_strerror (err));			\
+          exit (1);						\
+        }							\
+    }								\
+  while (0)
+
  
 int main(int argc, char **argv){
     int needed_arguments = 1; //programm self
