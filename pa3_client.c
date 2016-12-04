@@ -52,18 +52,10 @@ int main(int argc, char **argv){
      /*Initialize size variable to be used later on*/
      addr_size = sizeof serverAddr;
 
-     while(1){
-       nBytes = strlen(message) + 1;
+     nBytes = strlen(message) + 1;
 
-       /*Send message to server*/
-       sendto(clientSocket,message,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
-
-     }
-     
-     
-     
-     
-     
+     /*Send message to server*/
+     sendto(clientSocket,message,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
         
     }
     else{
