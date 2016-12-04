@@ -1,13 +1,10 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
 #include<stdlib.h>    //malloc
 #include<string.h>    //für strings
-
 #include <signal.h> //Damit ich Signale abfangen kann
+
+#include <errno.h>
+#include <sys/socket.h>
+#include <resolv.h>
 
 int server_port = 80;
 int debug = 1;
