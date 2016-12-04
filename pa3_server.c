@@ -1,8 +1,12 @@
-#include<stdio.h> //For standard things
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
 #include<stdlib.h>    //malloc
 #include<string.h>    //für strings
-#include<sys/socket.h>
-#include<netinet/in.h>
+
 #include <signal.h> //Damit ich Signale abfangen kann
 
 char server_port[65536];
@@ -44,7 +48,7 @@ int main(int argc, char **argv){
     if(argc==needed_arguments){
         strncpy(server_port, argv[1], sizeof server_port);
         
-        
+       //Einfacher USP Server https://www.abc.se/~m6695/udp.html
         
        struct sockaddr_in si_me, si_other;
        int s, i, slen=sizeof(si_other);
