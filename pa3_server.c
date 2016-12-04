@@ -1,10 +1,10 @@
 #include <signal.h> //Damit ich Signale abfangen kann
 
-#include<stdio.h> //printf
-#include<string.h> //memset
-#include<stdlib.h> //exit(0);
-#include<arpa/inet.h>
-#include<sys/socket.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <stdlib.h>
 
 int server_port = 80;
 int debug = 1;
