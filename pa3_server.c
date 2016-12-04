@@ -1,11 +1,12 @@
 #include <signal.h> //Damit ich Signale abfangen kann
 #include <unistd.h> // für strg c anfangen
 
-#include<stdio.h> //For standard things
-#include<stdlib.h>    //malloc
-#include<string.h>    //für strings
-#include<sys/socket.h>
-#include<netinet/in.h>
+#include <stdio.h> //For standard things
+#include <stdlib.h>    //malloc
+#include <string.h>    //für strings
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 int server_port = 80;
 int debug = 1;
@@ -60,6 +61,7 @@ int main(int argc, char **argv){
 	  /*Configure settings in address struct*/
 	  serverAddr.sin_family = AF_INET;
 	  serverAddr.sin_port = htons(server_port);
+	  serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
 
 	  /*Bind socket with address struct*/
