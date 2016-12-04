@@ -1,6 +1,7 @@
-#include<stdlib.h>    //malloc
-#include<string.h>    //für strings
+#include <stdlib.h>    //malloc
+#include <string.h>    //für strings
 #include <signal.h> //Damit ich Signale abfangen kann
+#include <stdio.h>
 
 #include <errno.h>
 #include <sys/socket.h>
