@@ -46,14 +46,16 @@ int main(int argc, char **argv){
  
     if(argc==needed_arguments){       
         server_port = atoi(argv[1]);
+	    
+	//Einfacher UDP Server http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
 	
-	  int nBytes;
-	  struct sockaddr_in serverAddr;
-	  struct sockaddr_storage serverStorage;
-	  socklen_t addr_size;
+	int nBytes;
+	struct sockaddr_in serverAddr;
+	struct sockaddr_storage serverStorage;
+	socklen_t addr_size;
 
-	  /*Create UDP socket*/
-	  udpSocket = socket(PF_INET, SOCK_DGRAM, 0);
+	/*Create UDP socket*/
+	udpSocket = socket(PF_INET, SOCK_DGRAM, 0);
 
 	  /*Configure settings in address struct*/
 	  serverAddr.sin_family = AF_INET;
@@ -62,7 +64,9 @@ int main(int argc, char **argv){
 
 	  /*Bind socket with address struct*/
 	  bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
-
+	  
+	    
+	  printf("Server Gestartet... \n");
 	  /*Initialize size variable to be used later on*/
 	  addr_size = sizeof serverStorage;
 
