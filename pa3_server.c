@@ -66,7 +66,7 @@ int main(int argc, char **argv){
 	  bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 	  
 	    
-	  printf("Server Gestartet... \n");
+	  printf("Server Gestartet auf Port: %i \n",server_port);
 	  /*Initialize size variable to be used later on*/
 	  addr_size = sizeof serverStorage;
 
