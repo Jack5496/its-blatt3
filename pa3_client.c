@@ -34,7 +34,7 @@ int main(int argc, char **argv){
      
      
      
-     int clientSocket, portNum, nBytes;
+     int clientSocket nBytes;
      
      struct sockaddr_in serverAddr;
      socklen_t addr_size;
@@ -55,7 +55,7 @@ int main(int argc, char **argv){
        nBytes = strlen(message) + 1;
 
        /*Send message to server*/
-       sendto(clientSocket,messages,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
+       sendto(clientSocket,message,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
 
      }
      
