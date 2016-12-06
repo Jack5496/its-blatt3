@@ -142,9 +142,6 @@ void gpgCheckSign() {
 			if(green){printf("Die Signatur ist GREEN\n");	}
 		}
 	}
-
-	if (err != GPG_ERR_NO_ERROR && tnsigs < 1)
-	fail_if_err(err);
 }
 
 
