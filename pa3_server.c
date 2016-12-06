@@ -104,20 +104,19 @@ void gpgCheckSign() {
 	// Error handling
 	if (err != GPG_ERR_NO_ERROR && !verify_result)
         	fail_if_err (err);
-	
-	printf("Signatur Check\n");	
+		
 	if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
 		gpgme_key_t key;
 		err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
 		
-		printf("From: %s\n",key->uids->name);
+		printf("%s",key->uids->name);
+		printf("%s\n",plain);
 		
 		
 	}
 	else{
 		printf("Die Signatur ist INVALID\n");
 	}
-	printf("Signatur Check Ended\n");
 }
 
 
