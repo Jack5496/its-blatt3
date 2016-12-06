@@ -45,6 +45,8 @@ int main(int argc, char **argv){
     struct sockaddr_in serverAddr;
     int clientSocket;
     socklen_t addr_size;
+    int i;
+    
     
     int needed_arguments = 1; //programm self
     needed_arguments++; //Server Adress
@@ -60,7 +62,7 @@ int main(int argc, char **argv){
         }
         
         int err_port = 0;
-        int i=0;
+        i=0;
         while(argv[2][i] != '\0'){
              if (argv[2][i] < 47 || argv[2][i] > 57){
                 err = 1;
@@ -94,7 +96,6 @@ int main(int argc, char **argv){
      signature = malloc(sizeof(char)*65536);
      /*Sign message*/
      signText();
-     int i;
      for(i=0;i<signature_length;i++){
          printf("%c",signature[i]);
      }
