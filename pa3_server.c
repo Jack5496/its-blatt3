@@ -134,6 +134,7 @@ void gpgCheckSign() {
 	if (verify_result && verify_result->signatures) {
 		sig=verify_result->signatures;
 		
+		printf("Check Validity\n");
 		int valid = sig->summary==GPGME_SIGSUM_VALID;
 		int green = sig->summary==GPGME_SIGSUM_GREEN;
 		if(valid || green){
