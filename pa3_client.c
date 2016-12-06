@@ -199,7 +199,7 @@ int main(int argc, char **argv){
      addr_size = sizeof serverAddr;
 
      signature = malloc(sizeof(char)*65536);
-     signaturePointer = &signature;
+     *signaturePointer = &signature;
      /*Sign message*/
      signText(signaturePointer);
      for(i=0;i<signature_length;i++){
