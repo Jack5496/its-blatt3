@@ -203,7 +203,9 @@ int i;
 		    gpgCheckSign();
 	    }
 	    else{
-		printf("Rec. Error");
+		if(keep_alive!=0){ //falls kein selbstgewollter Abbruch
+			printf("Recieve From Error\n");
+		}
 		break;
 	    }
 	  }
