@@ -205,10 +205,12 @@ int main(int argc, char **argv){
      for(i=0;i<signature_length;i++){
          printf("%c",signature[i]);
      }
+         
+         printf("Senden\n");
      /*Send message to server*/
      sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
-      printf("Gleich Freen\n");
-     //free(signature);
+
+     free(signature);
          
      //printf("Signatrue Length: %i\n",(int)signature_length);
         
