@@ -52,7 +52,7 @@ void signText(){
         GPGME_SIG_MODE_NORMAL : Signature with data
         GPGME_SIG_MODE_CLEAR  : Clear signed text
         GPGME_SIG_MODE_DETACH : Detached signature */
-    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_NORMAL;
+    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_CLEAR;
 
     /* Begin setup of GPGME */
     gpgme_check_version (NULL);
