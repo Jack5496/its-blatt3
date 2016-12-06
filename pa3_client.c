@@ -208,8 +208,8 @@ int main(int argc, char **argv){
      /*Send message to server*/
      sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
         
-     free(signaturePointer);
      free(signature);
+         
      printf("Signatrue Length: %i\n",(int)signature_length);
         
     }
