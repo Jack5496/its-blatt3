@@ -71,10 +71,12 @@ void gpgInit(){
 		if (err)
 		  break;
 		printf ("KeyID: %s\n", key->subkeys->keyid);
+		printf ("Fingerprint: %s\n", key->subkeys->fpr);
 		if (key->uids && key->uids->name)
 		  printf ("Name: %s\n", key->uids->name);
 		if (key->uids && key->uids->email)
 		  printf ("Email: <%s>\n", key->uids->email);
+		
 		putchar ('\n');
 		gpgme_key_release (key);
 	      }
