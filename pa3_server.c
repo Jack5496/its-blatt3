@@ -16,6 +16,7 @@ int server_port = 5050; /* default port */
 int keep_alive = 1; /* boolean solange zugehört wird */
 int data_length;  /* länge der ankommenden daten */
 char* buffer;  /* Buffer für ankommende Daten */
+char* bufferPointer;  /* Buffer für ankommende Daten */
 char server_adress[] = "127.0.0.1";  /* Default server adresse */
 int udpSocket;  /* Udp Socket */
 
@@ -237,6 +238,7 @@ int main(int argc, char **argv){
 
 		/* Erstelle genug Platz für ankommende Nachrichten */
 		buffer = malloc(sizeof(char)*65536);
+		bufferPointer = buffer;
 
 		if(keep_alive){
 			printf("Server starting: %s:%i \n\n",server_adress,server_port);  	  
@@ -264,7 +266,7 @@ int main(int argc, char **argv){
 			close(udpSocket);
 		}
 		/* Wir freen mal alles was noch offen ist */
-		free(buffer);
+		free(bufferPointer);
 		gpgRelease();
 	}
 	else{
