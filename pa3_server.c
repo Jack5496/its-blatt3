@@ -50,7 +50,7 @@ void last_wish(int i){
 void gpgCheckSign() {
     gpgme_ctx_t ctx;
     gpgme_error_t err;
-    gpgme_data_t in, out, result;
+    gpgme_data_t in, result;
     gpgme_verify_result_t verify_result;
     gpgme_signature_t sig;
     int tnsigs, nsigs;
