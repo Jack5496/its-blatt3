@@ -86,7 +86,7 @@ void signText(){
     // Sign the contents of "in" using the defined mode and place it into "out"
     fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
 
-    
+    fprintf(stdout, "Signatur:\n %s\n", out);
     
     // Rewind the "out" data object
     ret = gpgme_data_seek (out, 0, SEEK_SET);
