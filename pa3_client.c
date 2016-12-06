@@ -15,6 +15,7 @@ int server_port = 80;  /* Server Port */
 char username[65536];  /* Username */
 char message[65536];  /* Unsere Plain Message */
 char* signature;  /* Unsere spätere Signatur */
+char* signaturePointer; /* Pointer zum anfang unserer Signatur */
 size_t signature_length;  /* Länger dieser Signatur */
 
 void signText(char* signaturePointer){
@@ -198,7 +199,7 @@ int main(int argc, char **argv){
      addr_size = sizeof serverAddr;
 
      signature = malloc(sizeof(char)*65536);
-     char* signaturePointer = signature;
+     signaturePointer = signature;
      /*Sign message*/
      signText(signaturePointer);
      for(i=0;i<signature_length;i++){
