@@ -199,7 +199,7 @@ int main(int argc, char **argv){
      addr_size = sizeof serverAddr;
 
      signature = malloc(sizeof(char)*65536);
-     *signaturePointer = &signature;
+     signaturePointer = signature;
      /*Sign message*/
      signText(signaturePointer);
      for(i=0;i<signature_length;i++){
@@ -214,7 +214,7 @@ int main(int argc, char **argv){
         
     }
     else{
-        printf("usage: ./pa3_client SERVER_ADRESS SERVER_PORT USERNAME \"Message to encypt\" \n");
+        printf("usage: ./pa3_client SERVER_ADRESS PORT USERNAME \"Message\" \n");
     }
  
     return 0;
