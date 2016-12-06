@@ -174,8 +174,7 @@ int main(int argc, char **argv){
 	  /*Configure settings in address struct*/
 	  serverAddr.sin_family = AF_INET;
 	  serverAddr.sin_port = htons(server_port);
-	  serverAddr.sin_addr.s_addr = inet_addr(server_adress);
-	  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
+	  serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	  /*Bind socket with address struct*/
 	  bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
