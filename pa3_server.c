@@ -110,17 +110,15 @@ void printUser(){
 
 void gpgCheckSign() {
 	// Create a data object that contains the text to sign
-	err = gpgme_data_new_from_mem (&in, signature, signature_length, 0);
+	err = gpgme_data_new_from_mem (&in, signature, signature_length, 1);
 	// Error handling
 	fail_if_err (err);
 
-
-
-	// Rewind the "out" data object
-	gpgme_data_seek (in, 0, SEEK_SET);
-
+	gpgme_data_t signed_text; 
+	gpgme_data_t plain;
+	
 	// Perform a decrypt/verify action
-	err = gpgme_op_verify (ctx, in, result);
+	err = gpgme_op_verify (ctx, in,signed_text,plain);
 
 	// Retrieve the verification result
 	verify_result = gpgme_op_verify_result (ctx);
