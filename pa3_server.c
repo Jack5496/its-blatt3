@@ -20,6 +20,42 @@ char* signature;
 char server_adress[] = "127.0.0.1";
 int udpSocket;
 
+gpgme_ctx_t ctx;
+gpgme_error_t err;
+gpgme_data_t in, result;
+gpgme_verify_result_t verify_result;
+gpgme_signature_t sig;
+int tnsigs, nsigs;
+
+void gpgInit(){
+	/* Begin setup of GPGME */
+    gpgme_check_version (NULL);
+    setlocale (LC_ALL, "");
+    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+    /* End setup of GPGME */
+
+    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
+    fail_if_err (err);
+    
+    // Create the GPGME Context
+    err = gpgme_new (&ctx);
+    // Error handling
+    fail_if_err (err);
+	
+    // Create a data object pointing to the result buffer
+    err = gpgme_data_new (&result);
+    // Error handling
+    fail_if_err (err);
+}
+
+void gpgRelease(){
+    // Release the "in" data object
+    gpgme_data_release (in);
+
+    // Release the context
+    gpgme_release (ctx);
+}
+
 /**
 * Letzer aufruf um alles wichtige zu schließen
 */
@@ -29,6 +65,7 @@ void last_wish(int i){
            {
 	       close(udpSocket);
 	       free(signature);
+	       gpgRelease()
                printf("Socket geschlossen\n");
            }
            exit(1); //schließe
@@ -47,37 +84,19 @@ void last_wish(int i){
     }                                                       \
     while (0)
 
+
+
 void gpgCheckSign() {
-    gpgme_ctx_t ctx;
-    gpgme_error_t err;
-    gpgme_data_t in, result;
-    gpgme_verify_result_t verify_result;
-    gpgme_signature_t sig;
-    int tnsigs, nsigs;
-
-    /* Begin setup of GPGME */
-    gpgme_check_version (NULL);
-    setlocale (LC_ALL, "");
-    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-    /* End setup of GPGME */
-
-    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
-    fail_if_err (err);
     
-    // Create the GPGME Context
-    err = gpgme_new (&ctx);
-    // Error handling
-    fail_if_err (err);
+
+    
 
     // Create a data object that contains the text to sign
     err = gpgme_data_new_from_mem (&in, signature, signature_length, 0);
     // Error handling
     fail_if_err (err);
 	
-    // Create a data object pointing to the result buffer
-    err = gpgme_data_new (&result);
-    // Error handling
-    fail_if_err (err);
+    
 
     // Rewind the "out" data object
     gpgme_data_seek (in, 0, SEEK_SET);
@@ -118,12 +137,6 @@ void gpgCheckSign() {
 
     if (err != GPG_ERR_NO_ERROR && tnsigs < 1)
         fail_if_err(err);
-
-    // Release the "in" data object
-    gpgme_data_release (in);
-
-    // Release the context
-    gpgme_release (ctx);
 }
 
 
@@ -142,6 +155,8 @@ int main(int argc, char **argv){
     
     int needed_arguments = 1; //programm self
     needed_arguments++; //Server Port
+	
+    gpgInit();
  
     if(argc==needed_arguments){       
         server_port = atoi(argv[1]);
@@ -186,6 +201,7 @@ int main(int argc, char **argv){
 	    }
 	  }
 	  free(signature);
+	  gpgRelease();
        
                 
     }
