@@ -120,7 +120,8 @@ void gpgCheckSign() {
 	
 	// Perform a verify action
 	err = gpgme_op_verify (ctx, in,signed_text,plain);
-
+	fail_if_err (err);
+	
 	// Retrieve the verification result
 	verify_result = gpgme_op_verify_result (ctx);
 
@@ -129,12 +130,12 @@ void gpgCheckSign() {
         	fail_if_err (err);
 	
 	printf("Signatur Check\n");	
-	/*if(verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN){
+	if(verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN){
 		printf("Die Signatur ist VALID\n");
 	}
 	else{
 		printf("Die Signatur ist INVALID\n");
-	}*/
+	}
 	printf("Signatur Check Ended\n");
 }
 
