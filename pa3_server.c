@@ -78,7 +78,7 @@ void last_wish(int i){
 	if(udpSocket > 0) //nur falls ein socket offen ist
 	{
 		close(udpSocket);
-		free(signature);
+		free(buffer);
 		gpgRelease();
 		printf("Socket geschlossen\n");
 	}
@@ -190,11 +190,11 @@ int main(int argc, char **argv){
 	      requesting client will be stored on serverStorage variable */
 	    buffer_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
 	    
-	    if(signature_length>0){	  
+	    if(buffer_length>0){	  
 		    gpgCheckSign();
 	    }
 	  }
-	  free(signature);
+	  free(buffer);
 	  gpgRelease();
        
                 
