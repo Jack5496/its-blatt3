@@ -75,7 +75,7 @@ void gpgRelease(){
 * Letzer aufruf um alles wichtige zu schließen
 */
 void last_wish(int i){
-	printf("Manuelles Beenden");
+	printf("\nManuelles Beenden\n");
 	keep_alive=0;
 }
 
