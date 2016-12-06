@@ -73,6 +73,11 @@ void gpgCheckSign() {
     err = gpgme_data_new_from_mem (&in, signature, signature_length, 0);
     // Error handling
     fail_if_err (err);
+	
+    // Create a data object pointing to the result buffer
+    err = gpgme_data_new (&result);
+    // Error handling
+    fail_if_err (err);
 
     // Rewind the "out" data object
     gpgme_data_seek (in, 0, SEEK_SET);
@@ -116,8 +121,6 @@ void gpgCheckSign() {
 
     // Release the "in" data object
     gpgme_data_release (in);
-    // Release the "out" data object
-    gpgme_data_release (out);
 
     // Release the context
     gpgme_release (ctx);
