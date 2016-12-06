@@ -208,9 +208,9 @@ int main(int argc, char **argv){
      /*Send message to server*/
      sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
       printf("Gleich Freen\n");
-     free(signature);
+     //free(signature);
          
-     printf("Signatrue Length: %i\n",(int)signature_length);
+     //printf("Signatrue Length: %i\n",(int)signature_length);
         
     }
     else{
