@@ -45,7 +45,7 @@ void signText(char* signaturePointer){
     }
 
     /* Hole Länge unserer Nachricht */
-    unsigned int textLength = strlen(message) + 1;
+    unsigned int textLength = strlen(message);
 
     /* Erstelle Data Objekt um unsere Nachricht zu halten */
     err = gpgme_data_new_from_mem (&in, message, textLength, 0);
