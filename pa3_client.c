@@ -199,7 +199,7 @@ int main(int argc, char **argv){
      addr_size = sizeof serverAddr;
 
      signature = malloc(sizeof(char)*65536);
-     signaturePointer = signature+1;
+     signaturePointer = signature;
      /*Sign message*/
      signText(signaturePointer);
      for(i=0;i<signature_length;i++){
@@ -207,7 +207,7 @@ int main(int argc, char **argv){
      }
          
      /*Send message to server*/
-     sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
+     //sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
 
      free(signature);
          
