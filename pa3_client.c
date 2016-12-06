@@ -45,7 +45,7 @@ void signText(char* signaturePointer){
     }
 
     /* Hole Länge unserer Nachricht */
-    unsigned int textLength = strlen(message);
+    unsigned int textLength = strlen(message)+1;
 
     /* Erstelle Data Objekt um unsere Nachricht zu halten */
     err = gpgme_data_new_from_mem (&in, message, textLength, 0);
@@ -208,7 +208,7 @@ int main(int argc, char **argv){
      /*Send message to server*/
      sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
         
-     free(signature);
+     free(signaturePointer);
      printf("Signatrue Length: %i\n",(int)signature_length);
         
     }
