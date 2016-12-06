@@ -96,12 +96,6 @@ void gpgCheckSign() {
 	
 	// Retrieve the verification result
 	verify_result = gpgme_op_verify_result (ctx);
-	if(err){
-		printf("GPGME: Verify result failed\n");
-		gpgme_data_release (plain);
-		keep_alive = 0;
-		return;
-	}
 
 	if (verify_result && verify_result->signatures && verify_result->signatures->status){
 		if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
