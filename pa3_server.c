@@ -56,7 +56,7 @@ void gpgInit(){
 	fail_if_err (err);
 
 	// Create a data object pointing to the result buffer
-	err = gpgme_data_new (&result);
+	err = gpgme_data_new (&in);
 	// Error handling
 	fail_if_err (err);	
 }
