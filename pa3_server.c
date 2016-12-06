@@ -128,20 +128,13 @@ void gpgCheckSign() {
         	fail_if_err (err);
 	
 	printf("Signatur Check\n");
-    
-	// Check if the verify_result object has signatures
-	if (verify_result && verify_result->signatures) {
-		
-		printf("Check Validity\n");
-		int valid = verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN;
-		if(valid){
-			printf("Die Signatur ist VALID\n");
-		}
-		else{
-			printf("Die Signatur ist INVALID\n");
-		}
+	int valid = verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN;
+	if(valid){
+		printf("Die Signatur ist VALID\n");
 	}
-	
+	else{
+		printf("Die Signatur ist INVALID\n");
+	}
 	printf("Signatur Check Ended\n");
 }
 
