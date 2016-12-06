@@ -120,7 +120,7 @@ void gpgCheckSign() {
 	gpgme_data_seek (in, 0, SEEK_SET);
 
 	// Perform a decrypt/verify action
-	err = gpgme_op_decrypt_verify (ctx, in, result);
+	err = gpgme_op_verify (ctx, in, result);
 
 	// Retrieve the verification result
 	verify_result = gpgme_op_verify_result (ctx);
