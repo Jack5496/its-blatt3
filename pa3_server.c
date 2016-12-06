@@ -12,7 +12,7 @@
 #include <errno.h>   /* errno             */
 #include <locale.h>  /* locale support    */
 
-int server_port = 80;
+int server_port = 5050; //default port
 int debug = 1;
 int keep_alive = 1;
 int signature_length;
@@ -41,7 +41,7 @@ int tnsigs, nsigs;
 
 
 void gpgInit(){
-	/* Begin setup of GPGME */
+    /* Begin setup of GPGME */
     gpgme_check_version (NULL);
     setlocale (LC_ALL, "");
     gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
@@ -85,10 +85,6 @@ void last_wish(int i){
 }
 
 void gpgCheckSign() {
-    
-
-    
-
     // Create a data object that contains the text to sign
     err = gpgme_data_new_from_mem (&in, signature, signature_length, 0);
     // Error handling
@@ -108,6 +104,10 @@ void gpgCheckSign() {
     // Error handling
     if (err != GPG_ERR_NO_ERROR && !verify_result)
         fail_if_err (err);
+	
+    char *sender = malloc(sizeof(char)*65536);
+	sender = gpgme_get_sender(ctx);
+	
 
     // Check if the verify_result object has signatures
     if (verify_result && verify_result->signatures) {
@@ -178,9 +178,7 @@ int main(int argc, char **argv){
 	  /*Bind socket with address struct*/
 	  bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 	  
-	  printf("Server Gestartet \n");  
-	  printf("Adresse: %s \n",server_adress);
-	  printf("Port: %i \n",server_port);
+	  printf("Server starting: %s:%i \n\n",server_adress,server_port);  
 	  /*Initialize size variable to be used later on*/
 	  addr_size = sizeof serverStorage;
 	    
@@ -188,13 +186,9 @@ int main(int argc, char **argv){
 	  while(keep_alive){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
-	    signature_length = recvfrom(udpSocket,signature,1024,0,(struct sockaddr *)&serverStorage, &addr_size);
+	    signature_length = recvfrom(udpSocket,signature,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
 	    
 	    if(signature_length>0){	  
-		    int i;
-		    for(i=0; i<signature_length;i++){
-			printf("%c",signature[i]);
-		    }
 		    gpgCheckSign();
 	    }
 	  }
@@ -204,7 +198,7 @@ int main(int argc, char **argv){
                 
     }
     else{
-        printf("usage: ./pa3_server SERVER_PORT \n");
+        printf("usage: ./pa3_server PORT \n");
     }
   
     return 0;
