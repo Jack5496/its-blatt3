@@ -42,12 +42,11 @@ char private_key[65536];
 void signText(){
     gpgme_ctx_t ctx;
     gpgme_error_t err;
-     gpgme_data_t in, out, result;
+    gpgme_data_t in, out, result;
     gpgme_verify_result_t verify_result;
     gpgme_signature_t sig;
     int tnsigs, nsigs;
-    int BUF_SIZE = 512;
-    char buf[BUF_SIZE + 1];
+    
     int ret;
     /* Set the GPGME signature mode
         GPGME_SIG_MODE_NORMAL : Signature with data
@@ -81,13 +80,6 @@ void signText(){
 
     // Sign the contents of "in" using the defined mode and place it into "out"
     fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
-
-    size_t signature_length = 0;
-    
-    signature = gpgme_data_release_and_get_mem(out,&signature_length);
-    printf("######### START ######\n\n"); 
-    printf("%s\n",signature);
-    printf("######### END ######\n\n"); 
     
     // Rewind the "out" data object
     ret = gpgme_data_seek (out, 0, SEEK_SET);
@@ -97,14 +89,10 @@ void signText(){
 
    
     // Read the contents of "out" and place it into buf
-    while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0) {
-        // Write the contents of "buf" to the console
-        fwrite (buf, ret, 1, stdout);
-    }
-
-    fwrite ("\n", 1, 1, stdout);
-
-   
+    ret = gpgme_data_read (out, signature, 65536);
+    printf("######### START ######\n\n"); 
+    printf("%s\n",signature);
+    printf("######### END ######\n\n"); 
     
     // Error handling
     if (ret < 0)
