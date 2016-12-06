@@ -114,8 +114,8 @@ void gpgCheckSign() {
 	// Error handling
 	fail_if_err (err);
 
-	gpgme_data_t signed_text; 
-	gpgme_data_t plain;
+	gpgme_data_t signed_text = 0; 
+	gpgme_data_t plain = 0;
 	
 	// Perform a decrypt/verify action
 	err = gpgme_op_verify (ctx, in,signed_text,plain);
