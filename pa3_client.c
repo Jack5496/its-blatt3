@@ -206,9 +206,8 @@ int main(int argc, char **argv){
          printf("%c",signature[i]);
      }
          
-         printf("Senden\n");
      /*Send message to server*/
-     sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
+     //sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
 
      free(signature);
          
