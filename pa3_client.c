@@ -86,13 +86,8 @@ void signText(){
     // Sign the contents of "in" using the defined mode and place it into "out"
     fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
 
-    printf("---- START ----\n\n");
-    // Read the contents of "out" and place it into buf
-    while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0) {
-        // Write the contents of "buf" to the console
-        fwrite (buf, ret, 1, stdout);
-    }
-    printf("---- END ----\n\n");
+    
+    
     
     // Rewind the "out" data object
     ret = gpgme_data_seek (out, 0, SEEK_SET);
@@ -100,6 +95,7 @@ void signText(){
     if (ret)
         fail_if_err (gpgme_err_code_from_errno (errno));
 
+    printf("---- START ----\n\n");
     // Read the contents of "out" and place it into buf
     while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0) {
         // Write the contents of "buf" to the console
@@ -107,7 +103,8 @@ void signText(){
     }
 
     fwrite ("\n", 1, 1, stdout);
-
+printf("---- END ----\n\n");
+    
     // Error handling
     if (ret < 0)
         fail_if_err (gpgme_err_code_from_errno (errno));
