@@ -12,13 +12,11 @@
 
 char server_adress[65536]; /* Platz für Server Adresse */
 int server_port = 80;  /* Server Port */
-char username[65536];  /* Username */
-char message[65536];  /* Unsere Plain Message */
 char* signature;  /* Unsere spätere Signatur */
 char* signaturePointer; /* Pointer zum anfang unserer Signatur */
 size_t signature_length;  /* Länger dieser Signatur */
 
-void signText(char* signaturePointer){
+void signText(char* username,char* message,char* signaturePointer){
      /* GPG wird hier nicht extra initialisiert, da wir eh nur einen Aufruf starten */
 
     gpgme_ctx_t ctx;  /* GPG Context */
@@ -44,11 +42,8 @@ void signText(char* signaturePointer){
         return;
     }
 
-    /* Hole Länge unserer Nachricht */
-    unsigned int textLength = strlen(message)+1;
-
     /* Erstelle Data Objekt um unsere Nachricht zu halten */
-    err = gpgme_data_new_from_mem (&in, message, textLength, 0);
+    err = gpgme_data_new_from_mem (&in, message, strlen(message), 0);
     if(err){
         printf("GPGME: Data assign failed\n");
         gpgme_data_release (out);
@@ -116,7 +111,7 @@ void signText(char* signaturePointer){
         gpgme_release (ctx);
         return;
     }
-
+     
     /* Signiere den Inhalt mit dem Modus und packe dies in out */
     err = gpgme_op_sign (ctx, in, out, sigMode);
     if(err){
@@ -130,7 +125,7 @@ void signText(char* signaturePointer){
         gpgme_key_release (key); /* Release den Key */
         return;
     }
-
+     
     gpgme_key_release (key); /* Release den Key */
 
     /* Sinatur länge halter */
@@ -180,9 +175,6 @@ int main(int argc, char **argv){
             exit(1);
         }        
         server_port = atoi(argv[2]);
-        
-        strncpy(username, argv[3], sizeof username);
-        strncpy(message, argv[4], sizeof message);
      
      //Kleiner UDP Client http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
      
@@ -201,7 +193,7 @@ int main(int argc, char **argv){
      signature = malloc(sizeof(char)*65536);
      signaturePointer = signature;
      /*Sign message*/
-     //signText(signaturePointer);
+     signText(argv[3],argv[4],signaturePointer);
      for(i=0;i<signature_length;i++){
          printf("%c",signature[i]);
      }
