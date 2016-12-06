@@ -50,11 +50,6 @@ void gpgCheckSign() {
     gpgme_verify_result_t verify_result;
     gpgme_signature_t sig;
     int tnsigs, nsigs;
-    /* Set the GPGME signature mode
-        GPGME_SIG_MODE_NORMAL : Signature with data
-        GPGME_SIG_MODE_CLEAR  : Clear signed text
-        GPGME_SIG_MODE_DETACH : Detached signature */
-    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_CLEAR;
 
     /* Begin setup of GPGME */
     gpgme_check_version (NULL);
@@ -76,10 +71,10 @@ void gpgCheckSign() {
     fail_if_err (err);
 
     // Rewind the "out" data object
-    ret = gpgme_data_seek (signature, 0, SEEK_SET);
+    ret = gpgme_data_seek (in, 0, SEEK_SET);
 
     // Perform a decrypt/verify action
-    err = gpgme_op_decrypt_verify (ctx, signature, result);
+    err = gpgme_op_decrypt_verify (ctx, in, result);
 
     // Retrieve the verification result
     verify_result = gpgme_op_verify_result (ctx);
