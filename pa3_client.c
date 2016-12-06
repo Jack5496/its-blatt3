@@ -16,8 +16,6 @@ char username[65536];  /* Username */
 char message[65536];  /* Unsere Plain Message */
 char* signature;  /* Unsere spätere Signatur */
 size_t signature_length;  /* Länger dieser Signatur */
-char private_key[65536];
-
 
 void signText(){
      /* GPG wird hier nicht extra initialisiert, da wir eh nur einen Aufruf starten */
