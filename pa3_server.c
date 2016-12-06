@@ -137,6 +137,7 @@ void gpgCheckSign() {
 		// Iterate through the signatures in the verify_result object
 		for (nsigs=0, sig=verify_result->signatures; sig; sig = sig->next, nsigs++) {
 			fprintf(stdout, "Signature made with Key: %s\n", sig->fpr);
+			fprintf(stdout, "Signature made by: %s\n", sig->name);
 			fprintf(stdout, "Created: %lu; Expires %lu\n", sig->timestamp, sig->exp_timestamp);
 			char *validity = sig->validity == GPGME_VALIDITY_UNKNOWN? "unknown":
 			    sig->validity == GPGME_VALIDITY_UNDEFINED? "undefined":
