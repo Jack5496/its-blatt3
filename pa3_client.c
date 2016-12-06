@@ -85,15 +85,12 @@ int main(int argc, char **argv){
      signature = malloc(sizeof(char)*65536);
      /*Sign message*/
      signText();
-        printf("#####START######\n\n");
-        int i;
-        for(i=0;i<signature_length;i++){
-            printf("%c",signature[i]);
-        }
-        printf("#####END######\n\n");
-     
+     int i;
+     for(i=0;i<signature_length;i++){
+         printf("%c",signature[i]);
+     }
      /*Send message to server*/
-     sendto(clientSocket,message,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
+     sendto(clientSocket,signature,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
         
      free(signature);
         
