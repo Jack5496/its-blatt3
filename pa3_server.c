@@ -58,31 +58,7 @@ void gpgInit(){
 	// Create a data object pointing to the result buffer
 	err = gpgme_data_new (&result);
 	// Error handling
-	fail_if_err (err);
-	
-	gpgme_key_t key;
-	
-	printf("Start Finding all Users: \n");
-	
-	err = gpgme_op_keylist_start (ctx, NULL, 0);
-	while (!err)
-	      {
-		err = gpgme_op_keylist_next (ctx, &key);
-		if (err)
-		  break;
-		printf ("KeyID: %s\n", key->subkeys->keyid);
-		printf ("Fingerprint: %s\n", key->subkeys->fpr);
-		if (key->uids && key->uids->name)
-		  printf ("Name: %s\n", key->uids->name);
-		if (key->uids && key->uids->email)
-		  printf ("Email: <%s>\n", key->uids->email);
-		
-		putchar ('\n');
-		gpgme_key_release (key);
-	      }
-		
-	printf("Found all Users: \n");
-	
+	fail_if_err (err);	
 }
 
 void gpgRelease(){
@@ -106,6 +82,30 @@ void last_wish(int i){
 		printf("Socket geschlossen\n");
 	}
 	exit(1); //schließe
+}
+
+void printUser(){
+	gpgme_key_t key;
+	
+	printf("Start Finding all Users: \n");
+	
+	err = gpgme_op_keylist_start (ctx, NULL, 0);
+	while (!err)
+	      {
+		err = gpgme_op_keylist_next (ctx, &key);
+		if (err)
+		  break;
+		printf ("Fingerprint: %s\n", key->subkeys->fpr);
+		if (key->uids && key->uids->name)
+		  printf ("Name: %s\n", key->uids->name);
+		if (key->uids && key->uids->email)
+		  printf ("Email: <%s>\n", key->uids->email);
+		
+		putchar ('\n');
+		gpgme_key_release (key);
+	      }
+		
+	printf("Found all Users: \n");	
 }
 
 void gpgCheckSign() {
@@ -137,7 +137,6 @@ void gpgCheckSign() {
 		// Iterate through the signatures in the verify_result object
 		for (nsigs=0, sig=verify_result->signatures; sig; sig = sig->next, nsigs++) {
 			fprintf(stdout, "Signature made with Key: %s\n", sig->fpr);
-			fprintf(stdout, "Signature made by: %s\n", sig->name);
 			fprintf(stdout, "Created: %lu; Expires %lu\n", sig->timestamp, sig->exp_timestamp);
 			char *validity = sig->validity == GPGME_VALIDITY_UNKNOWN? "unknown":
 			    sig->validity == GPGME_VALIDITY_UNDEFINED? "undefined":
