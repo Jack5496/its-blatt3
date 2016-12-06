@@ -135,11 +135,12 @@ void gpgCheckSign() {
 		sig=verify_result->signatures;
 		
 		printf("Check Validity\n");
-		int valid = sig->summary==GPGME_SIGSUM_VALID;
-		int green = sig->summary==GPGME_SIGSUM_GREEN;
-		if(valid || green){
-			if(valid){printf("Die Signatur ist VALID\n");	}
-			if(green){printf("Die Signatur ist GREEN\n");	}
+		int valid = verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN;
+		if(valid){
+			printf("Die Signatur ist VALID\n");
+		}
+		else{
+			printf("Die Signatur ist INVALID\n");
 		}
 	}
 }
