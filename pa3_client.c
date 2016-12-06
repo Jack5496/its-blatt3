@@ -1,4 +1,4 @@
-#include <stdlib.h>    //malloc
+#include <stdlib.h> /* malloc */
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,36 +10,145 @@
 #include <errno.h>   /* errno             */
 #include <locale.h>  /* locale support    */
 
-char server_adress[65536];
-int server_port = 80;
-char username[65536];
-char message[65536];
-int debug = 1;
-char* signature;
-size_t signature_length;
+char server_adress[65536]; /* Platz für Server Adresse */
+int server_port = 80;  /* Server Port */
+char username[65536];  /* Username */
+char message[65536];  /* Unsere Plain Message */
+char* signature;  /* Unsere spätere Signatur */
+size_t signature_length;  /* Länger dieser Signatur */
 char private_key[65536];
 
 
+void signText(){
+     /* GPG wird hier nicht extra initialisiert, da wir eh nur einen Aufruf starten */
 
+    gpgme_ctx_t ctx;  /* GPG Context */
+    gpgme_error_t err;  /* GPG Errors */
+    gpgme_data_t in, out;  /* Data Input in, Data Output out */
+    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_CLEAR;  /* Setze den Modus auf Clear --> keine Kompression */
 
+    /* Begin setup of GPGME */
+    gpgme_check_version (NULL);  /* Entnommen aus der Doku */
+    setlocale (LC_ALL, "");
+    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
 
+    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
+    if(err){
+        printf("GPGME: Engine check failed\n");
+        return;
+    }
 
+    /* Erstelle GPG Context */
+    err = gpgme_new (&ctx);
+    if(err){
+        printf("GPGME: Context init failed\n");
+        return;
+    }
 
+    /* Hole Länge unserer Nachricht */
+    unsigned int textLength = strlen(message) + 1;
 
+    /* Erstelle Data Objekt um unsere Nachricht zu halten */
+    err = gpgme_data_new_from_mem (&in, message, textLength, 0);
+    if(err){
+        printf("GPGME: Data assign failed\n");
+        gpgme_data_release (out);
+        /* Release CTX */
+        gpgme_release (ctx);
+        return;
+    }
 
+    gpgme_key_t key;  /* Erstelle neuen halter unseres Keys */
 
-#define fail_if_err(err)                                    \
-    do {                                                    \
-        if (err) {                                          \
-            fprintf (stderr, "%s:%d: %s: %s\n",             \
-                __FILE__, __LINE__, gpgme_strsource (err),  \
-                gpgme_strerror (err));                      \
-            exit (1);                                       \
-        }                                                   \
-    }                                                       \
-    while (0)
+    /* Öffne KeyList um richtigen Key zu finden */
+    err = gpgme_op_keylist_start(ctx, username, 0);
+    if(err){
+        printf("GPGME: Start Keylist failed\n");
+        /* Release Input */
+        gpgme_data_release (in);
+        /* Release CTX */
+        gpgme_release (ctx);
+        return;
+    }
 
-void signText();
+    /* Nehme den ersten passenden Key zum Namen */
+    err = gpgme_op_keylist_next(ctx, &key);
+    if(err){
+        printf("GPGME: Next key finding Failed, Ambigeos name ?\n");
+        /* Release Input */
+        gpgme_data_release (in);
+        /* Release CTX */
+        gpgme_release (ctx);
+        gpgme_key_release (key); /* Release den Key */
+        return;
+    }
+
+    /* Beende Keylist */
+    err = gpgme_op_keylist_end(ctx);
+    if(err){
+        printf("GPGME: Keylist closing failed\n");
+        /* Release Input */
+        gpgme_data_release (in);
+        /* Release CTX */
+        gpgme_release (ctx);
+        gpgme_key_release (key); /* Release den Key */
+        return;
+    }
+
+    /* Füge key zum Context hinzu */
+    err = gpgme_signers_add(ctx, key);
+    if(err){
+        printf("GPGME: Key adding failed\n");
+        /* Release Input */
+        gpgme_data_release (in);
+        /* Release CTX */
+        gpgme_release (ctx);
+        gpgme_key_release (key); /* Release den Key */
+        return;
+    }
+
+    /* Erstelle Output Objekt */
+    err = gpgme_data_new (&out);
+    if(err){
+        printf("GPGME: Data assign failed\n");
+        /* Release Input */
+        gpgme_data_release (in);
+        /* Release CTX */
+        gpgme_release (ctx);
+        return;
+    }
+
+    /* Signiere den Inhalt mit dem Modus und packe dies in out */
+    err = gpgme_op_sign (ctx, in, out, sigMode);
+    if(err){
+        printf("GPGME: Signation failed\n");
+        /* Release Input */
+        gpgme_data_release (in);
+        /* Release Output */
+        gpgme_data_release (out);
+        /* Release CTX */
+        gpgme_release (ctx);
+        gpgme_key_release (key); /* Release den Key */
+        return;
+    }
+
+    gpgme_key_release (key); /* Release den Key */
+
+    /* Sinatur länge halter */
+    signature_length = 0;
+
+    gpgme_data_seek(out,0,SEEK_SET); /* Setze Pointer auf den Anfang */
+
+    /* Hole die Signatur aus out mit der länge */
+    signature = gpgme_data_release_and_get_mem(out,&signature_length);
+
+    /* Release Input */
+    gpgme_data_release (in);
+    /* Release Output */
+    gpgme_data_release (out);
+    /* Release CTX */
+    gpgme_release (ctx);
+}
 
 int main(int argc, char **argv){
     struct sockaddr_in serverAddr;
@@ -47,8 +156,7 @@ int main(int argc, char **argv){
     socklen_t addr_size;
     int i;
     
-    
-    int needed_arguments = 1; //programm self
+    int needed_arguments = 1; //programm selber
     needed_arguments++; //Server Adress
     needed_arguments++; //Server Port
     needed_arguments++; //UserName
@@ -112,48 +220,3 @@ int main(int argc, char **argv){
     return 0;
 }
 
-void signText(){
-    gpgme_ctx_t ctx;
-    gpgme_error_t err;
-    gpgme_data_t in, out;
-    /* Set the GPGME signature mode
-        GPGME_SIG_MODE_NORMAL : Signature with data
-        GPGME_SIG_MODE_CLEAR  : Clear signed text
-        GPGME_SIG_MODE_DETACH : Detached signature */
-    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_CLEAR;
-
-    /* Begin setup of GPGME */
-    gpgme_check_version (NULL);
-    setlocale (LC_ALL, "");
-    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-    
-    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
-    fail_if_err (err);
-    
-    // Create the GPGME Context
-    err = gpgme_new (&ctx);
-    // Error handling
-    fail_if_err (err);
-    
-    unsigned int textLength = strlen(message) + 1;
-    
-    // Create a data object that contains the text to sign
-    fail_if_err (gpgme_data_new_from_mem (&in, message, textLength, 0));
-
-    // Create a data object pointing to the out buffer
-    fail_if_err (gpgme_data_new (&out));
-
-
-    
-    // Sign the contents of "in" using the defined mode and place it into "out"
-    fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
-
-    signature_length = 0;
-    gpgme_data_seek(out,0,SEEK_SET);
-    signature = gpgme_data_release_and_get_mem(out,&signature_length);
-    
-    // Release the "in" data object
-    gpgme_data_release (in);
-    // Release the context
-    gpgme_release (ctx);
-}
