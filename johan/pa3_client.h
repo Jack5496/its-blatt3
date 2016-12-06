@@ -26,6 +26,7 @@ int i;
 
 //gpg stuff
 char* to_send;
+char* to_send_pointer;
 gpgme_ctx_t ctx;
 gpgme_error_t error;
 gpgme_key_t key;
