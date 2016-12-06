@@ -169,7 +169,7 @@ int main(int argc, char **argv){
 	socklen_t addr_size;
 
 	/*Create UDP socket*/
-	udpSocket = socket(PF_INET, SOCK_DGRAM, 0);
+	udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	  /*Configure settings in address struct*/
 	  serverAddr.sin_family = AF_INET;
