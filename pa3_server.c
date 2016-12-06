@@ -8,6 +8,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <gpgme.h>   /* gpgme             */
+#include <errno.h>   /* errno             */
+#include <locale.h>  /* locale support    */
+
 int server_port = 80;
 int debug = 1;
 int keep_alive = 1;
