@@ -62,6 +62,8 @@ void gpgInit(){
 	
 	gpgme_key_t key;
 	
+	printf("Start Finding all Users: \n");
+	
 	err = gpgme_op_keylist_start (ctx, NULL, 0);
 	while (!err)
 	      {
@@ -77,6 +79,7 @@ void gpgInit(){
 		gpgme_key_release (key);
 	      }
 		
+	printf("Found all Users: \n");
 	
 }
 
