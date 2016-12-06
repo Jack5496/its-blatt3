@@ -42,6 +42,10 @@ char private_key[65536];
 void signText();
 
 int main(int argc, char **argv){
+    struct sockaddr_in serverAddr;
+    int clientSocket;
+    socklen_t addr_size;
+    
     int needed_arguments = 1; //programm self
     needed_arguments++; //Server Adress
     needed_arguments++; //Server Port
@@ -49,24 +53,33 @@ int main(int argc, char **argv){
     needed_arguments++; //From Here up the Message
  
     if(argc==needed_arguments){
-        strncpy(server_adress, argv[1], sizeof server_adress);
+        int err_adr = inet_aton(argv[1],&serverAddr.sin_addr);
+        if(err_adr==0) {
+            printf("Error: No valid Server IP\n");
+            exit(1);
+        }
+        
+        int err_port = 0;
+        int i=0;
+        while(argv[2][i] != '\0'){
+             if (arg[2][i] < 47 || arg[2][i] > 57){
+                err = 1;
+                break;
+            }
+            i++;
+        }
+        if(err_port==1){
+            printf("Error: No valid Port\n");
+            exit(1);
+        }        
         server_port = atoi(argv[2]);
+        
         strncpy(username, argv[3], sizeof username);
         strncpy(message, argv[4], sizeof message);
-            
-        if(debug){
-            printf("Server Adress: %s\n", server_adress);
-            printf("Server Port: %i\n", server_port);
-            printf("Username: %s\n", username);
-            printf("Message: %s\n", message);
-        }
      
      //Kleiner UDP Client http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
      
-     int clientSocket;
      
-     struct sockaddr_in serverAddr;
-     socklen_t addr_size;
 
      /*Create UDP socket*/
      clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -74,7 +87,6 @@ int main(int argc, char **argv){
      /*Configure settings in address struct*/
      serverAddr.sin_family = AF_INET;
      serverAddr.sin_port = htons(server_port);
-     serverAddr.sin_addr.s_addr = inet_addr(server_adress);
 
      /*Initialize size variable to be used later on*/
      addr_size = sizeof serverAddr;
