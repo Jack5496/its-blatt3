@@ -199,6 +199,7 @@ int verify_message(){
 
         //malloc memory
         received = malloc(sizeof(char)*65536);
+        char* to_del = received;
 
         //go to the beginning
         error = gpgme_data_seek(buf_data,0,SEEK_SET);
@@ -223,7 +224,7 @@ int verify_message(){
         }
 
         //free received
-        free(received);
+        free(to_del);
 
         //get key
         error = gpgme_get_key(ctx, result->signatures->fpr, &key, 0);
