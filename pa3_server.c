@@ -112,9 +112,9 @@ void gpgCheckSign() {
 		
 		printf("%s",key->uids->name);
 		
-		size_t* plainTextLength = NULL;
+		size_t plainTextLength = NULL;
 		
-		char* plainText = gpgme_data_release_and_get_mem(plain,plainTextLength);
+		char* plainText = gpgme_data_release_and_get_mem(plain,&plainTextLength);
 		//gpg_data_seek(plain,0,SEEK_SET);
 		
 		int i;
