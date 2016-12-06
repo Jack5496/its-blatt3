@@ -97,7 +97,7 @@ void gpgCheckSign() {
 	// Retrieve the verification result
 	verify_result = gpgme_op_verify_result (ctx);
 
-	//if (verify_result && verify_result->signatures && verify_result->signatures->status){
+	if (verify_result && verify_result->signatures && verify_result->signatures->status){
 		if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
 			gpgme_key_t key;
 			err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
@@ -125,13 +125,13 @@ void gpgCheckSign() {
 		else{
 		printf("Die Signatur ist INVALID\n");
 		}
-	/*}
+	}
 	else{
 		printf("GPGME: Verify result failed\n");
 		gpgme_data_release (plain);
 		keep_alive = 0;
 		return;
-	}*/
+	}
 	
 }
 
