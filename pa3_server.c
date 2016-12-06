@@ -149,6 +149,19 @@ int main(int argc, char **argv){
     gpgInit();
  
     if(argc==needed_arguments){       
+	int err_port = 0;
+        i=0;
+        while(argv[1][i] != '\0'){
+             if (argv[1][i] < 47 || argv[1][i] > 57){
+                err_port = 1;
+                break;
+            }
+            i++;
+        }
+        if(err_port==1){
+            printf("Error: No valid Port\n");
+            exit(1);
+        }        
         server_port = atoi(argv[1]);
 	    
 	//Einfacher UDP Server http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
