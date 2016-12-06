@@ -118,7 +118,7 @@ void gpgCheckSign() {
 
 			size_t plainTextLength;
 			
-			gpg_data_seek(plain,0,SEEK_SET);
+			gpgme_data_seek(plain,0,SEEK_SET);
 			char* plainText = gpgme_data_release_and_get_mem(plain,&plainTextLength);
 
 			int i;
