@@ -15,7 +15,7 @@
 int server_port = 5050; //default port
 int debug = 1;
 int keep_alive = 1;
-int buffer_length;
+int data_length;
 char* buffer;
 char server_adress[] = "127.0.0.1";
 int udpSocket;
@@ -111,7 +111,7 @@ void printUser(){
 
 void gpgCheckSign() {
 	// Create a data object that contains the text to sign
-	err = gpgme_data_new_from_mem (&in, buffer, buffer_length, 1);
+	err = gpgme_data_new_from_mem (&in, buffer, data_length, 1);
 	// Error handling
 	fail_if_err (err);
 
@@ -165,7 +165,7 @@ int main(int argc, char **argv){
 	
 	
 	struct sockaddr_in serverAddr;
-	struct sockaddr_storage serverStorage;
+	struct sockaddr serverStorage;
 	socklen_t addr_size;
 
 	/*Create UDP socket*/
@@ -179,7 +179,7 @@ int main(int argc, char **argv){
 	  /*Bind socket with address struct*/
 	  int binding = bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 	    if(binding<0){
-		printf("Binding Hasnt Worked\n");
+		printf("Binding doesnt worked\n");
 		exit(1);    
 	    }
 	  
@@ -191,10 +191,14 @@ int main(int argc, char **argv){
 	  while(keep_alive){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
-	    buffer_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
+	    data_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
 	    
-	    if(buffer_length>0){	  
+	    if(buffer_length>=0){	  
 		    gpgCheckSign();
+	    }
+	    else{
+		printf("Rec. Error");
+		exit(1);
 	    }
 	  }
 	  free(buffer);
