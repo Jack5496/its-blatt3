@@ -198,6 +198,7 @@ int i;
 		exit(1);
 	    }
 	  }
+	    
 	  if(udpSocket > 0){
 			close(udpSocket);
 	  }
