@@ -62,7 +62,7 @@ int main(int argc, char **argv){
         int err_port = 0;
         int i=0;
         while(argv[2][i] != '\0'){
-             if (arg[2][i] < 47 || arg[2][i] > 57){
+             if (argv[2][i] < 47 || argv[2][i] > 57){
                 err = 1;
                 break;
             }
