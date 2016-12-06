@@ -75,7 +75,7 @@ void signText(){
     unsigned int textLength = strlen(message) + 1;
     
     // Create a data object that contains the text to sign
-    err = gpgme_data_new_from_mem (&in, textToSign, textLength, 0);
+    err = gpgme_data_new_from_mem (&in, message, textLength, 0);
     // Error handling
     fail_if_err (err);
 
