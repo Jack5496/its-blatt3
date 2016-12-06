@@ -141,6 +141,8 @@ void gpgCheckSign() {
 			printf("Die Signatur ist INVALID\n");
 		}
 	}
+	
+	printf("Signatur Check Ended\n");
 }
 
 
