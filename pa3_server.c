@@ -75,15 +75,8 @@ void gpgRelease(){
 * Letzer aufruf um alles wichtige zu schließen
 */
 void last_wish(int i){
-	printf("Manuel beendet\n");
-	if(udpSocket > 0) //nur falls ein socket offen ist
-	{
-		close(udpSocket);
-		free(buffer);
-		gpgRelease();
-		printf("Socket geschlossen\n");
-	}
-	exit(1); //schließe
+	printf("Manuelles Beenden");
+	keep_alive=0;
 }
 
 void gpgCheckSign() {
@@ -203,6 +196,9 @@ int main(int argc, char **argv){
 		printf("Rec. Error");
 		exit(1);
 	    }
+	  }
+	  if(udpSocket > 0){
+			close(udpSocket);
 	  }
 	  free(buffer);
 	  gpgRelease();
