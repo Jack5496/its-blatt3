@@ -161,19 +161,18 @@ int main(int argc, char **argv){
             exit(1);
         }
         
-        int err_port = 0;
         i=0;
+        /* Laufe bis zum ende des Strings */
         while(argv[2][i] != '\0'){
-             if (argv[2][i] < 47 || argv[2][i] > 57){
-                err_port = 1;
-                break;
+             /* Überprüfe jedes Zeichen ob es eine Zahl ist in ASCII */
+             if (argv[2][i] < 47 || argv[2][i] > 57){ //falls nicht
+                printf("Error: No valid Port\n");
+                exit(1);
             }
             i++;
         }
-        if(err_port==1){
-            printf("Error: No valid Port\n");
-            exit(1);
-        }        
+         
+        /* Alles lief wohl gut */ 
         server_port = atoi(argv[2]);
      
      //Kleiner UDP Client http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
@@ -183,24 +182,33 @@ int main(int argc, char **argv){
      /*Create UDP socket*/
      clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
 
-     /*Configure settings in address struct*/
+     /* Konfiguriere Server */
      serverAddr.sin_family = AF_INET;
      serverAddr.sin_port = htons(server_port);
 
-     /*Initialize size variable to be used later on*/
+     /* Initialisiere Adress Size */
      addr_size = sizeof serverAddr;
 
+     /* Wir erstellen erstnaml Platz für unsere Signatur */    
      signature = malloc(sizeof(char)*65536);
+     /* Und erstellen einen Pointer mit dem wir rumspielen */
      signaturePointer = signature;
-     /*Sign message*/
+     
+     /* Signiere die Nachricht */
      signText(argv[3],argv[4],signaturePointer);
+         
+     /* Mehr als Debug Information anzusehen, da in 
+      * der Aufgabe nicht erwähnt worden ist, was der
+      * Client ausgeben soll */
      for(i=0;i<signature_length;i++){
          printf("%c",signature[i]);
      }
          
+         
      /*Send message to server*/
-     sendto(clientSocket,signature,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
+     sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
 
+         
      free(signaturePointer);        
     }
     else{
