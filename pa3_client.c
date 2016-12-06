@@ -137,7 +137,7 @@ void signText(){
 
     size_t signature_length = 0;
     
-    signature = gpgme_release_and_get_mem(out,&signature_length);
+    signature = gpgme_data_release_and_get_mem(out,&signature_length);
     
     
     // Release the "in" data object
