@@ -51,7 +51,7 @@ int main(int argc, char **argv){
 	    
 	//Einfacher UDP Server http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
 	
-	int nBytes;
+	int signature_length;
 	struct sockaddr_in serverAddr;
 	struct sockaddr_storage serverStorage;
 	socklen_t addr_size;
@@ -77,8 +77,11 @@ int main(int argc, char **argv){
 	  while(keep_alive){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
-	    nBytes = recvfrom(udpSocket,buffer,1024,0,(struct sockaddr *)&serverStorage, &addr_size);
-	    printf("Revieved %i Bytes, with Message: %s\n", nBytes,buffer);
+	    signature_length = recvfrom(udpSocket,buffer,1024,0,(struct sockaddr *)&serverStorage, &addr_size);
+	    int i;
+	    for(i=0; i<signature_length;i++){
+	    	printf("%c",buffer[i]);
+	    }
 	  }
        
                 
