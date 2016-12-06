@@ -110,7 +110,7 @@ void gpgCheckSign() {
 		err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
 		
 		
-		printf("%s",key->uids->name);
+		printf("%s: ",key->uids->name);
 		
 		size_t plainTextLength;
 		
