@@ -148,6 +148,7 @@ int main(int argc, char** argv){
 
     //allocate memory
     to_send = malloc(sizeof(char)*65536);
+    char* to_del = to_send;
 
     //gpg error handling
     to_send = gpgme_data_release_and_get_mem(signed_data, &bytes);
@@ -161,7 +162,7 @@ int main(int argc, char** argv){
             addr_size);
 
     //free memory
-    free(to_send);
+    free(to_del);
 
     //release gpg stuff
     gpgme_release(ctx);
