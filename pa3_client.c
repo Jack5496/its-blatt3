@@ -149,6 +149,7 @@ void signText(){
     fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
 
     signature_length = 0;
+    gpgme_data_seek(out,0,SEEK_SET);
     signature = gpgme_data_release_and_get_mem(out,&signature_length);
     
     // Release the "in" data object
