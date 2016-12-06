@@ -43,7 +43,7 @@ void signText(char* username,char* message,char* signaturePointer){
     }
 
     /* Erstelle Data Objekt um unsere Nachricht zu halten */
-    err = gpgme_data_new_from_mem (&in, message, strlen(message), 0);
+    err = gpgme_data_new_from_mem (&in, message, strlen(message), 1);
     if(err){
         printf("GPGME: Data assign failed\n");
         gpgme_data_release (out);
