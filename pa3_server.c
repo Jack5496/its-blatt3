@@ -15,8 +15,8 @@
 int server_port = 5050; //default port
 int debug = 1;
 int keep_alive = 1;
-int signature_length;
-char* signature;
+int buffer_length;
+char* buffer;
 char server_adress[] = "127.0.0.1";
 int udpSocket;
 
@@ -111,7 +111,7 @@ void printUser(){
 
 void gpgCheckSign() {
 	// Create a data object that contains the text to sign
-	err = gpgme_data_new_from_mem (&in, signature, signature_length, 1);
+	err = gpgme_data_new_from_mem (&in, buffer, buffer_length, 1);
 	// Error handling
 	fail_if_err (err);
 
@@ -184,11 +184,11 @@ int main(int argc, char **argv){
 	  /*Initialize size variable to be used later on*/
 	  addr_size = sizeof serverStorage;
 	    
-	  signature = malloc(sizeof(char)*65536);
+	  buffer = malloc(sizeof(char)*65536);
 	  while(keep_alive){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
-	    signature_length = recvfrom(udpSocket,signature,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
+	    buffer_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
 	    
 	    if(signature_length>0){	  
 		    gpgCheckSign();
