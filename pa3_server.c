@@ -57,7 +57,7 @@ void gpgInit(){
 	fail_if_err (err);
 
 	// Create a data object pointing to the result buffer
-	err = gpgme_data_new (&plain);
+	
 	
 	// Error handling
 	fail_if_err (err);	
@@ -92,7 +92,7 @@ void gpgCheckSign() {
 	// Error handling
 	fail_if_err (err);
 
-	
+	err = gpgme_data_new (&plain);
 	
 	// Perform a verify action
 	err = gpgme_op_verify (ctx, in,NULL,plain);
@@ -109,7 +109,14 @@ void gpgCheckSign() {
 		gpgme_key_t key;
 		err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
 		
+		
 		printf("%s",key->uids->name);
+		
+		size_t* plainTextLength = NULL;
+		
+		char* plainText = gpgme_data_release_and_get_mem(plain,plainTextLength);
+		//gpg_data_seek(plain,0,SEEK_SET);
+		
 		printf("%s\n",plain);
 		
 		
