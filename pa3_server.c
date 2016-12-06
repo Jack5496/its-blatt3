@@ -154,7 +154,7 @@ int i;
         }
         if(err_port==1){
             printf("Error: No valid Port\n");
-            exit(1);
+            keep_alive = 0;
         }        
         server_port = atoi(argv[1]);
 	    
@@ -167,6 +167,10 @@ int i;
 
 	/*Create UDP socket*/
 	udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if(udpSocket<0){
+	    printf("Unable to setup Socket\n");	
+	    keep_alive = 0;
+	}
 
 	  /*Configure settings in address struct*/
 	  serverAddr.sin_family = AF_INET;
@@ -177,15 +181,20 @@ int i;
 	  int binding = bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 	    if(binding<0){
 		printf("Binding doesnt worked\n");
-		exit(1);    
+		keep_alive = 0;
 	    }
 	  
-	  printf("Server starting: %s:%i \n\n",server_adress,server_port);  
+	  
 	  /*Initialize size variable to be used later on*/
 	  addr_size = sizeof serverStorage;
 	    
 	  buffer = malloc(sizeof(char)*65536);
+	    
+	  if(keep_alive){
+		printf("Server starting: %s:%i \n\n",server_adress,server_port);  	  
+	  }
 	  while(keep_alive){
+		  
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
 	    data_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
@@ -195,7 +204,7 @@ int i;
 	    }
 	    else{
 		printf("Rec. Error");
-		exit(1);
+		break;
 	    }
 	  }
 	    
