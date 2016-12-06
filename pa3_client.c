@@ -68,7 +68,7 @@ void signText(){
     fail_if_err (err);
 
     // Set the context to textmode
-    gpgme_set_textmode (ctx, 1);
+    gpgme_set_textmode (ctx, 0);
     // Enable ASCII armor on the context
     gpgme_set_armor (ctx, 0);
     
