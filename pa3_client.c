@@ -38,10 +38,10 @@ char private_key[65536];
     }                                                       \
     while (0)
 
-void gpgSign(const char *keyID, const char *textToSign) {
+void signText(){
     gpgme_ctx_t ctx;
     gpgme_error_t err;
-    gpgme_data_t in, out, result;
+     gpgme_data_t in, out, result;
     gpgme_verify_result_t verify_result;
     gpgme_signature_t sig;
     int tnsigs, nsigs;
@@ -58,11 +58,7 @@ void gpgSign(const char *keyID, const char *textToSign) {
     gpgme_check_version (NULL);
     setlocale (LC_ALL, "");
     gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-#ifndef HAVE_W32_SYSTEM
-    gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
-#endif
-    /* End setup of GPGME */
-
+    
     err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
     fail_if_err (err);
     
@@ -75,9 +71,9 @@ void gpgSign(const char *keyID, const char *textToSign) {
     gpgme_set_textmode (ctx, 1);
     // Enable ASCII armor on the context
     gpgme_set_armor (ctx, 1);
-
-    unsigned int textLength = strlen (textToSign);
-
+    
+    unsigned int textLength = strlen(message) + 1;
+    
     // Create a data object that contains the text to sign
     err = gpgme_data_new_from_mem (&in, textToSign, textLength, 0);
     // Error handling
@@ -169,13 +165,6 @@ void gpgSign(const char *keyID, const char *textToSign) {
 
 
 
-
-
-
-
-
-
-
  
 int main(int argc, char **argv){
     int needed_arguments = 1; //programm self
@@ -189,7 +178,7 @@ int main(int argc, char **argv){
         server_port = atoi(argv[2]);
         strncpy(username, argv[3], sizeof username);
         strncpy(message, argv[4], sizeof message);
-     
+            
         if(debug){
             printf("Server Adress: %s\n", server_adress);
             printf("Server Port: %i\n", server_port);
@@ -218,15 +207,12 @@ int main(int argc, char **argv){
 
      nBytes = strlen(message) + 1;
 
+     /*Sign message*/
+     signText();
+     
      /*Send message to server*/
      sendto(clientSocket,message,nBytes,0,(struct sockaddr *)&serverAddr,addr_size);
-     
-     
-     
-     
-     
-     
-        
+             
     }
     else{
         printf("usage: ./pa3_client SERVER_ADRESS SERVER_PORT USERNAME \"Message to encypt\" \n");
