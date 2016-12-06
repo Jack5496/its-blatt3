@@ -129,7 +129,7 @@ void gpgCheckSign() {
         	fail_if_err (err);
 	
 	printf("Signatur Check\n");
-	printf("Singatures Null?: %i\n",(verify_result->signatures==0));
+	printf("Singatures Null?: %i\n",(verify_result->signatures->summar==0));
 	
 	int valid = verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN;
 	if(valid){
