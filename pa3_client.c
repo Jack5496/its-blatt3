@@ -14,6 +14,7 @@ char server_adress[65536];
 int server_port = 80;
 char username[65536];
 char message[65536];
+char signature[65536];
 int debug = 1;
 
 char private_key[65536];
@@ -66,11 +67,6 @@ void signText(){
     err = gpgme_new (&ctx);
     // Error handling
     fail_if_err (err);
-
-    // Set the context to textmode
-    gpgme_set_textmode (ctx, 0);
-    // Enable ASCII armor on the context
-    gpgme_set_armor (ctx, 0);
     
     unsigned int textLength = strlen(message) + 1;
     
@@ -95,7 +91,7 @@ void signText(){
     if (ret)
         fail_if_err (gpgme_err_code_from_errno (errno));
 
-    printf("---- START ----\n\n");
+   printf("######### START ######\n\n"); 
     // Read the contents of "out" and place it into buf
     while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0) {
         // Write the contents of "buf" to the console
@@ -103,7 +99,8 @@ void signText(){
     }
 
     fwrite ("\n", 1, 1, stdout);
-printf("---- END ----\n\n");
+
+   printf("######### END ######\n\n"); 
     
     // Error handling
     if (ret < 0)
