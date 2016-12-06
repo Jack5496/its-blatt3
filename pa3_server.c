@@ -70,11 +70,11 @@ void gpgInit(){
 		err = gpgme_op_keylist_next (ctx, &key);
 		if (err)
 		  break;
-		printf ("%s:", key->subkeys->keyid);
+		printf ("KeyID: %s\n", key->subkeys->keyid);
 		if (key->uids && key->uids->name)
-		  printf (" %s", key->uids->name);
+		  printf ("Name: %s\n", key->uids->name);
 		if (key->uids && key->uids->email)
-		  printf (" <%s>", key->uids->email);
+		  printf ("Email: <%s>\n", key->uids->email);
 		putchar ('\n');
 		gpgme_key_release (key);
 	      }
