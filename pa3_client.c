@@ -75,25 +75,19 @@ void signText(){
     unsigned int textLength = strlen(message) + 1;
     
     // Create a data object that contains the text to sign
-    err = gpgme_data_new_from_mem (&in, message, textLength, 0);
-    // Error handling
-    fail_if_err (err);
+    fail_if_err (gpgme_data_new_from_mem (&in, message, textLength, 0));
 
     // Create a data object pointing to the out buffer
-    err = gpgme_data_new (&out);
-    // Error handling
-    fail_if_err (err);
+    fail_if_err (gpgme_data_new (&out));
 
     // Create a data object pointing to the result buffer
-    err = gpgme_data_new (&result);
-    // Error handling
-    fail_if_err (err);
+    fail_if_err (gpgme_data_new (&result));
 
     // Sign the contents of "in" using the defined mode and place it into "out"
-    err = gpgme_op_sign (ctx, in, out, sigMode);
-    // Error handling
-    fail_if_err (err);
+    fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
 
+    
+    
     // Rewind the "out" data object
     ret = gpgme_data_seek (out, 0, SEEK_SET);
     // Error handling
