@@ -75,7 +75,7 @@ void gpgCheckSign() {
     fail_if_err (err);
 
     // Rewind the "out" data object
-    ret = gpgme_data_seek (in, 0, SEEK_SET);
+    gpgme_data_seek (in, 0, SEEK_SET);
 
     // Perform a decrypt/verify action
     err = gpgme_op_decrypt_verify (ctx, in, result);
