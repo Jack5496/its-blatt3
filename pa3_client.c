@@ -58,6 +58,8 @@ void signText(){
         return;
     }
 
+    printf("Pos 1\n"); 
+     
     gpgme_key_t key;  /* Erstelle neuen halter unseres Keys */
 
     /* Öffne KeyList um richtigen Key zu finden */
@@ -70,6 +72,8 @@ void signText(){
         gpgme_release (ctx);
         return;
     }
+     
+     printf("Pos 2\n");
 
     /* Nehme den ersten passenden Key zum Namen */
     err = gpgme_op_keylist_next(ctx, &key);
@@ -82,6 +86,8 @@ void signText(){
         gpgme_key_release (key); /* Release den Key */
         return;
     }
+     
+     printf("Pos 3\n");
 
     /* Beende Keylist */
     err = gpgme_op_keylist_end(ctx);
@@ -94,6 +100,8 @@ void signText(){
         gpgme_key_release (key); /* Release den Key */
         return;
     }
+     
+     printf("Pos 4\n");
 
     /* Füge key zum Context hinzu */
     err = gpgme_signers_add(ctx, key);
@@ -106,6 +114,8 @@ void signText(){
         gpgme_key_release (key); /* Release den Key */
         return;
     }
+     
+     printf("Pos 5\n");
 
     /* Erstelle Output Objekt */
     err = gpgme_data_new (&out);
@@ -117,6 +127,8 @@ void signText(){
         gpgme_release (ctx);
         return;
     }
+     
+     printf("Pos 6\n");
 
     /* Signiere den Inhalt mit dem Modus und packe dies in out */
     err = gpgme_op_sign (ctx, in, out, sigMode);
@@ -131,6 +143,8 @@ void signText(){
         gpgme_key_release (key); /* Release den Key */
         return;
     }
+     
+     printf("Pos 7\n");
 
     gpgme_key_release (key); /* Release den Key */
 
