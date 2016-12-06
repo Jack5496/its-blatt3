@@ -23,6 +23,7 @@ int udpSocket;
 gpgme_ctx_t ctx;
 gpgme_error_t err;
 gpgme_data_t in, result;
+gpgme_data_t plain;
 gpgme_verify_result_t verify_result;
 gpgme_signature_t sig;
 int tnsigs, nsigs;
@@ -57,6 +58,7 @@ void gpgInit(){
 
 	// Create a data object pointing to the result buffer
 	err = gpgme_data_new (&in);
+	err = gpgme_data_new (&plain);
 	
 	// Error handling
 	fail_if_err (err);	
@@ -115,11 +117,10 @@ void gpgCheckSign() {
 	// Error handling
 	fail_if_err (err);
 
-	gpgme_data_t signed_text = 0; 
-	gpgme_data_t plain = 0;
+	
 	
 	// Perform a verify action
-	err = gpgme_op_verify (ctx, in,signed_text,plain);
+	err = gpgme_op_verify (ctx, in,NULL,plain);
 	fail_if_err (err);
 	
 	// Retrieve the verification result
