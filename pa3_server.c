@@ -41,101 +41,118 @@ int tnsigs, nsigs;
 
 
 void gpgInit(){
-    /* Begin setup of GPGME */
-    gpgme_check_version (NULL);
-    setlocale (LC_ALL, "");
-    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-    /* End setup of GPGME */
+	/* Begin setup of GPGME */
+	gpgme_check_version (NULL);
+	setlocale (LC_ALL, "");
+	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+	/* End setup of GPGME */
 
-    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
-    fail_if_err (err);
-    
-    // Create the GPGME Context
-    err = gpgme_new (&ctx);
-    // Error handling
-    fail_if_err (err);
+	err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
+	fail_if_err (err);
+
+	// Create the GPGME Context
+	err = gpgme_new (&ctx);
+	// Error handling
+	fail_if_err (err);
+
+	// Create a data object pointing to the result buffer
+	err = gpgme_data_new (&result);
+	// Error handling
+	fail_if_err (err);
 	
-    // Create a data object pointing to the result buffer
-    err = gpgme_data_new (&result);
-    // Error handling
-    fail_if_err (err);
+	gpgme_key_t key;
+	
+	err = gpgme_op_keylist_start (ctx, NULL, 0);
+	while (!err)
+	      {
+		err = gpgme_op_keylist_next (ctx, &key);
+		if (err)
+		  break;
+		printf ("%s:", key->subkeys->keyid);
+		if (key->uids && key->uids->name)
+		  printf (" %s", key->uids->name);
+		if (key->uids && key->uids->email)
+		  printf (" <%s>", key->uids->email);
+		putchar ('\n');
+		gpgme_key_release (key);
+	      }
+		
+	
 }
 
 void gpgRelease(){
-    // Release the "in" data object
-    gpgme_data_release (in);
+	// Release the "in" data object
+	gpgme_data_release (in);
 
-    // Release the context
-    gpgme_release (ctx);
+	// Release the context
+	gpgme_release (ctx);
 }
 
 /**
 * Letzer aufruf um alles wichtige zu schließen
 */
 void last_wish(int i){
-           printf("Manuel beendet\n");
-           if(udpSocket > 0) //nur falls ein socket offen ist
-           {
-	       close(udpSocket);
-	       free(signature);
-	       gpgRelease();
-               printf("Socket geschlossen\n");
-           }
-           exit(1); //schließe
+	printf("Manuel beendet\n");
+	if(udpSocket > 0) //nur falls ein socket offen ist
+	{
+		close(udpSocket);
+		free(signature);
+		gpgRelease();
+		printf("Socket geschlossen\n");
+	}
+	exit(1); //schließe
 }
 
 void gpgCheckSign() {
-    // Create a data object that contains the text to sign
-    err = gpgme_data_new_from_mem (&in, signature, signature_length, 0);
-    // Error handling
-    fail_if_err (err);
+	// Create a data object that contains the text to sign
+	err = gpgme_data_new_from_mem (&in, signature, signature_length, 0);
+	// Error handling
+	fail_if_err (err);
+
+
+
+	// Rewind the "out" data object
+	gpgme_data_seek (in, 0, SEEK_SET);
+
+	// Perform a decrypt/verify action
+	err = gpgme_op_decrypt_verify (ctx, in, result);
+
+	// Retrieve the verification result
+	verify_result = gpgme_op_verify_result (ctx);
+
+	// Error handling
+	if (err != GPG_ERR_NO_ERROR && !verify_result)
+        	fail_if_err (err);
 	
     
-
-    // Rewind the "out" data object
-    gpgme_data_seek (in, 0, SEEK_SET);
-
-    // Perform a decrypt/verify action
-    err = gpgme_op_decrypt_verify (ctx, in, result);
-
-    // Retrieve the verification result
-    verify_result = gpgme_op_verify_result (ctx);
-
-    // Error handling
-    if (err != GPG_ERR_NO_ERROR && !verify_result)
-        fail_if_err (err);
-	
-    char* sender;
-	sender = malloc(sizeof(char)*65536);
-	*sender = gpgme_get_sender(ctx);
 	
 
-    // Check if the verify_result object has signatures
-    if (verify_result && verify_result->signatures) {
-        // Iterate through the signatures in the verify_result object
-        for (nsigs=0, sig=verify_result->signatures; sig; sig = sig->next, nsigs++) {
-            fprintf(stdout, "Signature made with Key: %s\n", sig->fpr);
-            fprintf(stdout, "Created: %lu; Expires %lu\n", sig->timestamp, sig->exp_timestamp);
-            char *validity = sig->validity == GPGME_VALIDITY_UNKNOWN? "unknown":
-                    sig->validity == GPGME_VALIDITY_UNDEFINED? "undefined":
-                    sig->validity == GPGME_VALIDITY_NEVER? "never":
-                    sig->validity == GPGME_VALIDITY_MARGINAL? "marginal":
-                    sig->validity == GPGME_VALIDITY_FULL? "full":
-                    sig->validity == GPGME_VALIDITY_ULTIMATE? "ultimate": "[?]";
-            char *sig_status = gpg_err_code (sig->status) == GPG_ERR_NO_ERROR? "GOOD":
-                    gpg_err_code (sig->status) == GPG_ERR_BAD_SIGNATURE? "BAD_SIG":
-                    gpg_err_code (sig->status) == GPG_ERR_NO_PUBKEY? "NO_PUBKEY":
-                    gpg_err_code (sig->status) == GPG_ERR_NO_DATA? "NO_SIGNATURE":
-                    gpg_err_code (sig->status) == GPG_ERR_SIG_EXPIRED? "GOOD_EXPSIG":
-                    gpg_err_code (sig->status) == GPG_ERR_KEY_EXPIRED? "GOOD_EXPKEY": "INVALID";
-            fprintf(stdout, "Validity: %s; Signature Status: %s", validity, sig_status);
-            fwrite("\n", 1, 1, stdout);
-            tnsigs++;
-        }
-    }
+	// Check if the verify_result object has signatures
+	if (verify_result && verify_result->signatures) {
+		// Iterate through the signatures in the verify_result object
+		for (nsigs=0, sig=verify_result->signatures; sig; sig = sig->next, nsigs++) {
+			fprintf(stdout, "Signature made with Key: %s\n", sig->fpr);
+			fprintf(stdout, "Created: %lu; Expires %lu\n", sig->timestamp, sig->exp_timestamp);
+			char *validity = sig->validity == GPGME_VALIDITY_UNKNOWN? "unknown":
+			    sig->validity == GPGME_VALIDITY_UNDEFINED? "undefined":
+			    sig->validity == GPGME_VALIDITY_NEVER? "never":
+			    sig->validity == GPGME_VALIDITY_MARGINAL? "marginal":
+			    sig->validity == GPGME_VALIDITY_FULL? "full":
+			    sig->validity == GPGME_VALIDITY_ULTIMATE? "ultimate": "[?]";
+			char *sig_status = gpg_err_code (sig->status) == GPG_ERR_NO_ERROR? "GOOD":
+			    gpg_err_code (sig->status) == GPG_ERR_BAD_SIGNATURE? "BAD_SIG":
+			    gpg_err_code (sig->status) == GPG_ERR_NO_PUBKEY? "NO_PUBKEY":
+			    gpg_err_code (sig->status) == GPG_ERR_NO_DATA? "NO_SIGNATURE":
+			    gpg_err_code (sig->status) == GPG_ERR_SIG_EXPIRED? "GOOD_EXPSIG":
+			    gpg_err_code (sig->status) == GPG_ERR_KEY_EXPIRED? "GOOD_EXPKEY": "INVALID";
+			fprintf(stdout, "Validity: %s; Signature Status: %s", validity, sig_status);
+			fwrite("\n", 1, 1, stdout);
+			tnsigs++;
+		}
+	}
 
-    if (err != GPG_ERR_NO_ERROR && tnsigs < 1)
-        fail_if_err(err);
+	if (err != GPG_ERR_NO_ERROR && tnsigs < 1)
+	fail_if_err(err);
 }
 
 
