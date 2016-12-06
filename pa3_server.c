@@ -58,7 +58,6 @@ void gpgInit(){
 	// Create a data object pointing to the result buffer
 	err = gpgme_data_new (&in);
 	
-	err = gpgme_data_new (&verify_result);
 	// Error handling
 	fail_if_err (err);	
 }
@@ -119,7 +118,7 @@ void gpgCheckSign() {
 	gpgme_data_t signed_text = 0; 
 	gpgme_data_t plain = 0;
 	
-	// Perform a decrypt/verify action
+	// Perform a verify action
 	err = gpgme_op_verify (ctx, in,signed_text,plain);
 
 	// Retrieve the verification result
@@ -130,6 +129,8 @@ void gpgCheckSign() {
         	fail_if_err (err);
 	
 	printf("Signatur Check\n");
+	printf("Singatures Null?: %i\n",(verify_result->signatures==0));
+	
 	int valid = verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN;
 	if(valid){
 		printf("Die Signatur ist VALID\n");
