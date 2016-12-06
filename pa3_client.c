@@ -38,59 +38,8 @@ char private_key[65536];
     }                                                       \
     while (0)
 
-void signText(){
-    gpgme_ctx_t ctx;
-    gpgme_error_t err;
-     gpgme_data_t in, out, result;
-    /* Set the GPGME signature mode
-        GPGME_SIG_MODE_NORMAL : Signature with data
-        GPGME_SIG_MODE_CLEAR  : Clear signed text
-        GPGME_SIG_MODE_DETACH : Detached signature */
-    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_CLEAR;
+void signText();
 
-    /* Begin setup of GPGME */
-    gpgme_check_version (NULL);
-    setlocale (LC_ALL, "");
-    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-    
-    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
-    fail_if_err (err);
-    
-    // Create the GPGME Context
-    err = gpgme_new (&ctx);
-    // Error handling
-    fail_if_err (err);
-    
-    unsigned int textLength = strlen(message) + 1;
-    
-    // Create a data object that contains the text to sign
-    fail_if_err (gpgme_data_new_from_mem (&in, message, textLength, 0));
-
-    // Create a data object pointing to the out buffer
-    fail_if_err (gpgme_data_new (&out));
-
-    // Create a data object pointing to the result buffer
-    fail_if_err (gpgme_data_new (&result));
-
-    // Sign the contents of "in" using the defined mode and place it into "out"
-    fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
-
-    size_t signature_length = 0;
-    
-    signature = gpgme_release_and_get_mem(out,&signature_length);
-    
-    
-    // Release the "in" data object
-    gpgme_data_release (in);
-    // Release the context
-    gpgme_release (ctx);
-}
-
-
-
-
-
- 
 int main(int argc, char **argv){
     int needed_arguments = 1; //programm self
     needed_arguments++; //Server Adress
@@ -147,4 +96,52 @@ int main(int argc, char **argv){
     }
  
     return 0;
+}
+
+void signText(){
+    gpgme_ctx_t ctx;
+    gpgme_error_t err;
+     gpgme_data_t in, out, result;
+    /* Set the GPGME signature mode
+        GPGME_SIG_MODE_NORMAL : Signature with data
+        GPGME_SIG_MODE_CLEAR  : Clear signed text
+        GPGME_SIG_MODE_DETACH : Detached signature */
+    gpgme_sig_mode_t sigMode = GPGME_SIG_MODE_CLEAR;
+
+    /* Begin setup of GPGME */
+    gpgme_check_version (NULL);
+    setlocale (LC_ALL, "");
+    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+    
+    err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
+    fail_if_err (err);
+    
+    // Create the GPGME Context
+    err = gpgme_new (&ctx);
+    // Error handling
+    fail_if_err (err);
+    
+    unsigned int textLength = strlen(message) + 1;
+    
+    // Create a data object that contains the text to sign
+    fail_if_err (gpgme_data_new_from_mem (&in, message, textLength, 0));
+
+    // Create a data object pointing to the out buffer
+    fail_if_err (gpgme_data_new (&out));
+
+    // Create a data object pointing to the result buffer
+    fail_if_err (gpgme_data_new (&result));
+
+    // Sign the contents of "in" using the defined mode and place it into "out"
+    fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
+
+    size_t signature_length = 0;
+    
+    signature = gpgme_release_and_get_mem(out,&signature_length);
+    
+    
+    // Release the "in" data object
+    gpgme_data_release (in);
+    // Release the context
+    gpgme_release (ctx);
 }
