@@ -201,10 +201,7 @@ int main(int argc, char **argv){
      /*Send message to server*/
      sendto(clientSocket,signature,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
 
-     free(signature);
-         
-     //printf("Signatrue Length: %i\n",(int)signature_length);
-        
+     free(signaturePointer);        
     }
     else{
         printf("usage: ./pa3_client SERVER_ADRESS PORT USERNAME \"Message\" \n");
