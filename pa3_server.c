@@ -132,7 +132,6 @@ void gpgCheckSign() {
     
 	// Check if the verify_result object has signatures
 	if (verify_result && verify_result->signatures) {
-		sig=verify_result->signatures;
 		
 		printf("Check Validity\n");
 		int valid = verify_result->signatures->summary==GPGME_SIGSUM_VALID+GPGME_SIGSUM_GREEN;
