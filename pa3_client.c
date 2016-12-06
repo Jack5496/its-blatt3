@@ -16,6 +16,7 @@ char username[65536];
 char message[65536];
 int debug = 1;
 char* signature;
+size_t signature_length;
 char private_key[65536];
 
 
@@ -85,7 +86,10 @@ int main(int argc, char **argv){
      /*Sign message*/
      signText();
         printf("#####START######\n\n");
-        printf("%s\n",signature);
+        int i;
+        for(i=0;i<signature_length;i++){
+            printf("%c",signature[i]);
+        }
         printf("#####END######\n\n");
      
      /*Send message to server*/
@@ -138,14 +142,8 @@ void signText(){
     // Sign the contents of "in" using the defined mode and place it into "out"
     fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
 
-    size_t signature_length = 0;
-    
-    int i;
-    
+    signature_length = 0;
     signature = gpgme_data_release_and_get_mem(out,&signature_length);
-    for(i=0; i<signature_length; i++){
-        printf("%c",signature[i]);   
-    }
     
     // Release the "in" data object
     gpgme_data_release (in);
