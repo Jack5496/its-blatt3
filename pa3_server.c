@@ -193,7 +193,7 @@ int main(int argc, char **argv){
 	      requesting client will be stored on serverStorage variable */
 	    data_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
 	    
-	    if(buffer_length>=0){	  
+	    if(data_length>=0){	  
 		    gpgCheckSign();
 	    }
 	    else{
