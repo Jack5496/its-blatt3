@@ -84,7 +84,7 @@ void signText(){
 
     size_t signature_length = 0;
     
-    signatur = gpgme_data_release_and_get_mem(out,&signature_length);
+    signature = gpgme_data_release_and_get_mem(out,&signature_length);
     printf("######### START ######\n\n"); 
     printf("%s\n",signature);
     printf("######### END ######\n\n"); 
