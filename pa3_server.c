@@ -24,6 +24,7 @@ void last_wish(int i){
            if(udpSocket > 0) //nur falls ein socket offen ist
            {
 	       close(udpSocket);
+	       free(signature);
                printf("Socket geschlossen\n");
            }
            exit(1); //schließe
@@ -49,9 +50,6 @@ void gpgCheckSign() {
     gpgme_verify_result_t verify_result;
     gpgme_signature_t sig;
     int tnsigs, nsigs;
-    int BUF_SIZE = 512;
-    char buf[BUF_SIZE + 1];
-    int ret;
     /* Set the GPGME signature mode
         GPGME_SIG_MODE_NORMAL : Signature with data
         GPGME_SIG_MODE_CLEAR  : Clear signed text
@@ -170,7 +168,8 @@ int main(int argc, char **argv){
 	  printf("Port: %i \n",server_port);
 	  /*Initialize size variable to be used later on*/
 	  addr_size = sizeof serverStorage;
-
+	    
+	  signature = malloc(sizeof(char)*65536);
 	  while(keep_alive){
 	    /* Try to receive any incoming UDP datagram. Address and port of 
 	      requesting client will be stored on serverStorage variable */
@@ -184,6 +183,7 @@ int main(int argc, char **argv){
 		    gpgCheckSign();
 	    }
 	  }
+	  free(signature);
        
                 
     }
