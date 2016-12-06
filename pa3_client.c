@@ -209,7 +209,7 @@ int main(int argc, char **argv){
      sendto(clientSocket,signature,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
         
      free(signature);
-     printf("Signatrue Length: %i\n",signature_length);
+     printf("Signatrue Length: %l\n",signature_length);
         
     }
     else{
