@@ -70,7 +70,7 @@ void signText(){
     // Set the context to textmode
     gpgme_set_textmode (ctx, 1);
     // Enable ASCII armor on the context
-    gpgme_set_armor (ctx, 1);
+    gpgme_set_armor (ctx, 0);
     
     unsigned int textLength = strlen(message) + 1;
     
