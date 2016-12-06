@@ -86,30 +86,6 @@ void last_wish(int i){
 	exit(1); //schließe
 }
 
-void printUser(){
-	gpgme_key_t key;
-	
-	printf("Start Finding all Users: \n");
-	
-	err = gpgme_op_keylist_start (ctx, NULL, 0);
-	while (!err)
-	      {
-		err = gpgme_op_keylist_next (ctx, &key);
-		if (err)
-		  break;
-		printf ("Fingerprint: %s\n", key->subkeys->fpr);
-		if (key->uids && key->uids->name)
-		  printf ("Name: %s\n", key->uids->name);
-		if (key->uids && key->uids->email)
-		  printf ("Email: <%s>\n", key->uids->email);
-		
-		putchar ('\n');
-		gpgme_key_release (key);
-	      }
-		
-	printf("Found all Users: \n");	
-}
-
 void gpgCheckSign() {
 	// Create a data object that contains the text to sign
 	err = gpgme_data_new_from_mem (&in, buffer, data_length, 1);
@@ -131,7 +107,12 @@ void gpgCheckSign() {
 	
 	printf("Signatur Check\n");	
 	if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
-		printf("Die Signatur ist VALID\n");
+		gpgme_key_t key;
+		err = gpgme_get_key (ctx, verify_result->signatures->fpr, key, 0);
+		
+		printf("From: %s\n",key->uids->name);
+		
+		
 	}
 	else{
 		printf("Die Signatur ist INVALID\n");
