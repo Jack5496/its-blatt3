@@ -127,6 +127,7 @@ void gpgCheckSign() {
 	if (err != GPG_ERR_NO_ERROR && !verify_result)
         	fail_if_err (err);
 	
+	printf("Signatur Check\n");
     
 	// Check if the verify_result object has signatures
 	if (verify_result && verify_result->signatures) {
