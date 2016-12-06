@@ -139,7 +139,7 @@ void signText(){
 
     gpgme_data_seek(out,0,SEEK_SET); /* Setze Pointer auf den Anfang */
 
-    /* Hole die Signatur aus out mit der länge */
+    /* Hole die Signatur aus out mit der länge und release out */
     signature = gpgme_data_release_and_get_mem(out,&signature_length);
      
      printf("Pos 10\n");
@@ -147,9 +147,6 @@ void signText(){
     /* Release Input */
     gpgme_data_release (in);
           printf("Pos 101\n");
-    /* Release Output */
-    gpgme_data_release (out);
-          printf("Pos 102\n");
     /* Release CTX */
     gpgme_release (ctx);
      
