@@ -108,7 +108,7 @@ void gpgCheckSign() {
 	printf("Signatur Check\n");	
 	if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
 		gpgme_key_t key;
-		err = gpgme_get_key (ctx, verify_result->signatures->fpr, key, 0);
+		err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
 		
 		printf("From: %s\n",key->uids->name);
 		
