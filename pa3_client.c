@@ -69,13 +69,12 @@ int main(int argc, char **argv){
      socklen_t addr_size;
 
      /*Create UDP socket*/
-     clientSocket = socket(PF_INET, SOCK_DGRAM, 0);
+     clientSocket = socket(AF_INET, SOCK_DGRAM, 0);
 
      /*Configure settings in address struct*/
      serverAddr.sin_family = AF_INET;
      serverAddr.sin_port = htons(server_port);
      serverAddr.sin_addr.s_addr = inet_addr(server_adress);
-     memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
 
      /*Initialize size variable to be used later on*/
      addr_size = sizeof serverAddr;
@@ -103,7 +102,7 @@ int main(int argc, char **argv){
 void signText(){
     gpgme_ctx_t ctx;
     gpgme_error_t err;
-     gpgme_data_t in, out, result;
+    gpgme_data_t in, out, result;
     /* Set the GPGME signature mode
         GPGME_SIG_MODE_NORMAL : Signature with data
         GPGME_SIG_MODE_CLEAR  : Clear signed text
@@ -131,9 +130,8 @@ void signText(){
     // Create a data object pointing to the out buffer
     fail_if_err (gpgme_data_new (&out));
 
-    // Create a data object pointing to the result buffer
-    fail_if_err (gpgme_data_new (&result));
 
+    
     // Sign the contents of "in" using the defined mode and place it into "out"
     fail_if_err (gpgme_op_sign (ctx, in, out, sigMode));
 
