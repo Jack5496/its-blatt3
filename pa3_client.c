@@ -102,7 +102,7 @@ int main(int argc, char **argv){
 void signText(){
     gpgme_ctx_t ctx;
     gpgme_error_t err;
-    gpgme_data_t in, out, result;
+    gpgme_data_t in, out;
     /* Set the GPGME signature mode
         GPGME_SIG_MODE_NORMAL : Signature with data
         GPGME_SIG_MODE_CLEAR  : Clear signed text
