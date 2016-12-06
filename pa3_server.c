@@ -27,6 +27,19 @@ gpgme_verify_result_t verify_result;
 gpgme_signature_t sig;
 int tnsigs, nsigs;
 
+
+#define fail_if_err(err)                                    \
+    do {                                                    \
+        if (err) {                                          \
+            fprintf (stderr, "%s:%d: %s: %s\n",             \
+                __FILE__, __LINE__, gpgme_strsource (err),  \
+                gpgme_strerror (err));                      \
+            exit (1);                                       \
+        }                                                   \
+    }                                                       \
+    while (0)
+
+
 void gpgInit(){
 	/* Begin setup of GPGME */
     gpgme_check_version (NULL);
@@ -65,26 +78,11 @@ void last_wish(int i){
            {
 	       close(udpSocket);
 	       free(signature);
-	       gpgRelease()
+	       gpgRelease();
                printf("Socket geschlossen\n");
            }
            exit(1); //schließe
 }
-
-#include <gpgme.h>
-
-#define fail_if_err(err)                                    \
-    do {                                                    \
-        if (err) {                                          \
-            fprintf (stderr, "%s:%d: %s: %s\n",             \
-                __FILE__, __LINE__, gpgme_strsource (err),  \
-                gpgme_strerror (err));                      \
-            exit (1);                                       \
-        }                                                   \
-    }                                                       \
-    while (0)
-
-
 
 void gpgCheckSign() {
     
