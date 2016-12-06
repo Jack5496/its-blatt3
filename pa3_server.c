@@ -20,6 +20,8 @@ char* buffer;
 char server_adress[] = "127.0.0.1";
 int udpSocket;
 
+int gpgme_global_error = 0;
+
 gpgme_ctx_t ctx;
 gpgme_error_t err;
 gpgme_data_t in, result;
@@ -27,19 +29,6 @@ gpgme_data_t plain;
 gpgme_verify_result_t verify_result;
 gpgme_signature_t sig;
 int tnsigs, nsigs;
-
-
-#define fail_if_err(err)                                    \
-    do {                                                    \
-        if (err) {                                          \
-            fprintf (stderr, "%s:%d: %s: %s\n",             \
-                __FILE__, __LINE__, gpgme_strsource (err),  \
-                gpgme_strerror (err));                      \
-            exit (1);                                       \
-        }                                                   \
-    }                                                       \
-    while (0)
-
 
 void gpgInit(){
 	/* Begin setup of GPGME */
@@ -49,18 +38,19 @@ void gpgInit(){
 	/* End setup of GPGME */
 
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_GPGCONF);
-	fail_if_err (err);
+	if(err){
+		printf("GPGME: Engine Check failed\n");
+		keep_alive = 0;
+		return;
+	}
 
 	// Create the GPGME Context
 	err = gpgme_new (&ctx);
-	// Error handling
-	fail_if_err (err);
-
-	// Create a data object pointing to the result buffer
-	
-	
-	// Error handling
-	fail_if_err (err);	
+	if(err){
+		printf("GPGME: Context creation failed\n");
+		keep_alive = 0;
+		return;
+	}
 }
 
 void gpgRelease(){
@@ -82,44 +72,73 @@ void last_wish(int i){
 void gpgCheckSign() {
 	// Create a data object that contains the text to sign
 	err = gpgme_data_new_from_mem (&in, buffer, data_length, 1);
-	// Error handling
-	fail_if_err (err);
+	if(err){
+		printf("GPGME: Read Buffer into In failed\n");
+		keep_alive = 0;
+		return;
+	}
 
 	err = gpgme_data_new (&plain);
+	if(err){
+		printf("GPGME: Data new plain failed\n");
+		keep_alive = 0;
+		return;
+	}
 	
 	// Perform a verify action
 	err = gpgme_op_verify (ctx, in,NULL,plain);
-	fail_if_err (err);
+	if(err){
+		printf("GPGME: Verify failed\n");
+		gpgme_data_release (plain);
+		keep_alive = 0;
+		return;
+	}
 	
 	// Retrieve the verification result
 	verify_result = gpgme_op_verify_result (ctx);
+	if(err){
+		printf("GPGME: Verify result failed\n");
+		gpgme_data_release (plain);
+		keep_alive = 0;
+		return;
+	}
 
-	// Error handling
-	if (err != GPG_ERR_NO_ERROR && !verify_result)
-        	fail_if_err (err);
-		
-	if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
-		gpgme_key_t key;
-		err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
-		
-		
-		printf("%s: ",key->uids->name);
-		
-		size_t plainTextLength;
-		
-		char* plainText = gpgme_data_release_and_get_mem(plain,&plainTextLength);
-		//gpg_data_seek(plain,0,SEEK_SET);
-		
-		int i;
-		for(i=0; i<plainTextLength; i++){
-			printf("%c",plainText[i]);	
+	if (verify_result && verify_result->signatures && verify_result->signatures->status){
+		if(gpg_err_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
+			gpgme_key_t key;
+			err = gpgme_get_key (ctx, verify_result->signatures->fpr, &key, 0);
+			if(err){
+				printf("GPGME: get Key failed\n");
+				gpgme_data_release (plain);
+				keep_alive = 0;
+				return;
+			}
+
+			printf("%s: ",key->uids->name);
+
+			size_t plainTextLength;
+			
+			gpg_data_seek(plain,0,SEEK_SET);
+			char* plainText = gpgme_data_release_and_get_mem(plain,&plainTextLength);
+
+			int i;
+			for(i=0; i<plainTextLength; i++){
+				printf("%c",plainText[i]);	
+			}
+
+
 		}
-		
-		
+		else{
+		printf("Die Signatur ist INVALID\n");
+		}
 	}
 	else{
-		printf("Die Signatur ist INVALID\n");
+		printf("GPGME: Verify result failed\n");
+		gpgme_data_release (plain);
+		keep_alive = 0;
+		return;
 	}
+	
 }
 
 
