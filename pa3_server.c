@@ -177,7 +177,11 @@ int main(int argc, char **argv){
 	  serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	  /*Bind socket with address struct*/
-	  bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+	  int binding = bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+	    if(binding<0){
+		printf("Binding Hasnt Worked\n");
+		exit(1);    
+	    }
 	  
 	  printf("Server starting: %s:%i \n\n",server_adress,server_port);  
 	  /*Initialize size variable to be used later on*/
