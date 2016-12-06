@@ -140,8 +140,12 @@ void signText(){
 
     size_t signature_length = 0;
     
-    signature = gpgme_data_release_and_get_mem(out,&signature_length);
+    int i;
     
+    signature = gpgme_data_release_and_get_mem(out,&signature_length);
+    for(i=0; i<signature_length; i++){
+        printf("%c",signature[i]);   
+    }
     
     // Release the "in" data object
     gpgme_data_release (in);
