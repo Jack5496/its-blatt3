@@ -167,111 +167,109 @@ void gpgCheckSign() {
 
 
 int main(int argc, char **argv){
-   //Handlet aktivierung für STRG+C
-   //http://stackoverflow.com/questions/1641182/how-can-i-catch-a-ctrl-c-event-c
-   struct sigaction sigIntHandler;
-int i;
+	//Handlet aktivierung für STRG+C
+	//http://stackoverflow.com/questions/1641182/how-can-i-catch-a-ctrl-c-event-c
+	struct sigaction sigIntHandler;
+	int i;
 
-   sigIntHandler.sa_handler = last_wish;
-   sigemptyset(&sigIntHandler.sa_mask);
-   sigIntHandler.sa_flags = 0; //setze sa flags 0
+	sigIntHandler.sa_handler = last_wish;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0; //setze sa flags 0
 
-   sigaction(SIGINT, &sigIntHandler, NULL);
-   // Ende für STRG+C
-    
-    
-    int needed_arguments = 1; //programm selber
-    needed_arguments++; //Server Port
-	
-    /* Starte GPGME */ 
-    gpgInit();
- 
+	sigaction(SIGINT, &sigIntHandler, NULL);
+	// Ende für STRG+C
+
+
+	int needed_arguments = 1; //programm selber
+	needed_arguments++; //Server Port
+
+	/* Starte GPGME */ 
+	gpgInit();
+
 	/* Prüfe ob genug Argumente vorhanden */
-    if(argc==needed_arguments){       
-	int err_port = 0;
-        i=0;
-        while(argv[1][i] != '\0'){
-		/* Prüfe ob der Port nur aus Zahlen besteht */
-             if (argv[1][i] < 47 || argv[1][i] > 57){
-                err_port = 1;
-                break;
-            }
-            i++;
-        }
-        if(err_port==1){
-            printf("Error: No valid Port\n");
-            gpgRelease();
-	    return;
-        }        
-        server_port = atoi(argv[1]);
-	    
-	//Einfacher UDP Server http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
-	
-	/* Erstelle Alles für das aufsetzen des Sockets */
-	struct sockaddr_in serverAddr;
-	struct sockaddr serverStorage;
-	socklen_t addr_size;
+	if(argc==needed_arguments){       
+		int err_port = 0;
+		i=0;
+		while(argv[1][i] != '\0'){
+			/* Prüfe ob der Port nur aus Zahlen besteht */
+			if (argv[1][i] < 47 || argv[1][i] > 57){
+				err_port = 1;
+				break;
+			}
+			i++;
+		}
+		if(err_port==1){
+			printf("Error: No valid Port\n");
+			gpgRelease();
+			return 1;
+		}        
+		server_port = atoi(argv[1]);
 
-	/* Create UDP socket */
-	udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if(udpSocket<0){
-	    printf("Unable to setup Socket\n");	
-	    keep_alive = 0;
+		//Einfacher UDP Server http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
+
+		/* Erstelle Alles für das aufsetzen des Sockets */
+		struct sockaddr_in serverAddr;
+		struct sockaddr serverStorage;
+		socklen_t addr_size;
+
+		/* Create UDP socket */
+		udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if(udpSocket<0){
+			printf("Unable to setup Socket\n");	
+			keep_alive = 0;
+		}
+
+		/*Configure settings in address struct*/
+		serverAddr.sin_family = AF_INET;
+		serverAddr.sin_port = htons(server_port);
+		serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+		/*Bind socket with address struct*/
+		int binding = bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
+		if(binding<0){
+			printf("Binding doesnt worked\n");
+			keep_alive = 0;
+		}
+
+
+		/*Initialize size variable to be used later on*/
+		addr_size = sizeof serverStorage;
+
+		/* Erstelle genug Platz für ankommende Nachrichten */
+		buffer = malloc(sizeof(char)*65536);
+
+		if(keep_alive){
+			printf("Server starting: %s:%i \n\n",server_adress,server_port);  	  
+		}
+		/* Solange wir aktiv sein sollen */
+		while(keep_alive){
+
+			/* Hole alle ankommenden Daten und speichere diese in Buffer zwischen */
+			data_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
+
+			/* Falls wir was erhalten haben */
+			if(data_length>=0){	  
+				gpgCheckSign();
+			}
+			else{
+				if(keep_alive!=0){ //falls kein selbstgewollter Abbruch
+				printf("Recieve From Error\n");
+				}
+				break;
+			}
+		}
+
+		/* Falls wir unseren Socket noch schließen müssen, tun wir das */
+		if(udpSocket > 0){
+			close(udpSocket);
+		}
+		/* Wir freen mal alles was noch offen ist */
+		free(buffer);
+		gpgRelease();
+	}
+	else{
+		printf("usage: ./pa3_server PORT \n");
 	}
 
-	  /*Configure settings in address struct*/
-	  serverAddr.sin_family = AF_INET;
-	  serverAddr.sin_port = htons(server_port);
-	  serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	  /*Bind socket with address struct*/
-	  int binding = bind(udpSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
-	    if(binding<0){
-		printf("Binding doesnt worked\n");
-		keep_alive = 0;
-	    }
-	  
-	  
-	  /*Initialize size variable to be used later on*/
-	  addr_size = sizeof serverStorage;
-	    
-	  /* Erstelle genug Platz für ankommende Nachrichten */
-	  buffer = malloc(sizeof(char)*65536);
-	    
-	  if(keep_alive){
-		printf("Server starting: %s:%i \n\n",server_adress,server_port);  	  
-	  }
-	  /* Solange wir aktiv sein sollen */
-	  while(keep_alive){
-		  
-	    /* Hole alle ankommenden Daten und speichere diese in Buffer zwischen */
-	    data_length = recvfrom(udpSocket,buffer,65536,0,(struct sockaddr *)&serverStorage, &addr_size);
-	    
-            /* Falls wir was erhalten haben */
-	    if(data_length>=0){	  
-		    gpgCheckSign();
-	    }
-	    else{
-		if(keep_alive!=0){ //falls kein selbstgewollter Abbruch
-			printf("Recieve From Error\n");
-		}
-		break;
-	    }
-	  }
-	    
-	    /* Falls wir unseren Socket noch schließen müssen, tun wir das */
-	  if(udpSocket > 0){
-			close(udpSocket);
-	  }
-	  /* Wir freen mal alles was noch offen ist */
-	  free(buffer);
-	  gpgRelease();
-       
-                
-    }
-    else{
-        printf("usage: ./pa3_server PORT \n");
-    }
-  
-    return 0;
+	return 0;
 }
