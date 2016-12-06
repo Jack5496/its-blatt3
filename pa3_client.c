@@ -17,7 +17,7 @@ char message[65536];  /* Unsere Plain Message */
 char* signature;  /* Unsere spätere Signatur */
 size_t signature_length;  /* Länger dieser Signatur */
 
-void signText(){
+void signText(char* signaturePointer){
      /* GPG wird hier nicht extra initialisiert, da wir eh nur einen Aufruf starten */
 
     gpgme_ctx_t ctx;  /* GPG Context */
@@ -138,7 +138,7 @@ void signText(){
     gpgme_data_seek(out,0,SEEK_SET); /* Setze Pointer auf den Anfang */
 
     /* Hole die Signatur aus out mit der länge und release out */
-    signature = gpgme_data_release_and_get_mem(out,&signature_length);
+    signaturePointer = gpgme_data_release_and_get_mem(out,&signature_length);
      
      /* Release Input */
     gpgme_data_release (in);
@@ -198,8 +198,9 @@ int main(int argc, char **argv){
      addr_size = sizeof serverAddr;
 
      signature = malloc(sizeof(char)*65536);
+     signaturePointer = singature;
      /*Sign message*/
-     signText();
+     signText(signaturePointer);
      for(i=0;i<signature_length;i++){
          printf("%c",signature[i]);
      }
