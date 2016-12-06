@@ -63,7 +63,7 @@ int main(int argc, char **argv){
      
      //Kleiner UDP Client http://www.programminglogic.com/sockets-programming-in-c-using-udp-datagrams/
      
-     int clientSocket, nBytes;
+     int clientSocket;
      
      struct sockaddr_in serverAddr;
      socklen_t addr_size;
@@ -79,8 +79,6 @@ int main(int argc, char **argv){
 
      /*Initialize size variable to be used later on*/
      addr_size = sizeof serverAddr;
-
-     nBytes = strlen(message) + 1;
 
      signature = malloc(sizeof(char)*65536);
      /*Sign message*/
