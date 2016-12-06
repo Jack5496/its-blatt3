@@ -105,8 +105,9 @@ void gpgCheckSign() {
     if (err != GPG_ERR_NO_ERROR && !verify_result)
         fail_if_err (err);
 	
-    char *sender = malloc(sizeof(char)*65536);
-	sender = gpgme_get_sender(ctx);
+    char* sender;
+	sender = malloc(sizeof(char)*65536);
+	*sender = gpgme_get_sender(ctx);
 	
 
     // Check if the verify_result object has signatures
