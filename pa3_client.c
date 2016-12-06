@@ -142,15 +142,10 @@ void signText(){
     /* Hole die Signatur aus out mit der länge und release out */
     signature = gpgme_data_release_and_get_mem(out,&signature_length);
      
-     printf("Pos 10\n");
-
-    /* Release Input */
+     /* Release Input */
     gpgme_data_release (in);
-          printf("Pos 101\n");
     /* Release CTX */
     gpgme_release (ctx);
-     
-     printf("Pos 11\n");
 }
 
 int main(int argc, char **argv){
@@ -213,7 +208,9 @@ int main(int argc, char **argv){
      /*Send message to server*/
      sendto(clientSocket,signature,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
         
+     printf("freeing\n");
      free(signature);
+     printf("ended\n");
         
     }
     else{
