@@ -1,10 +1,10 @@
-#include <signal.h> //Damit ich Signale abfangen kann
-#include <unistd.h> // für strg c anfangen
+#include <signal.h> /* Damit ich Signale abfangen kann */
+#include <unistd.h> /* für strg c anfangen */
 
-#include <stdio.h> //For standard things
-#include <stdlib.h>    //malloc
-#include <string.h>    //für strings
-#include <sys/socket.h>
+#include <stdio.h> /* Für standard Dinge */
+#include <stdlib.h> /* malloc */
+#include <string.h> /* für strings */
+#include <sys/socket.h> /* sockets */
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -12,22 +12,19 @@
 #include <errno.h>   /* errno             */
 #include <locale.h>  /* locale support    */
 
-int server_port = 5050; //default port
-int debug = 1;
-int keep_alive = 1;
-int data_length;
-char* buffer;
-char server_adress[] = "127.0.0.1";
-int udpSocket;
+int server_port = 5050; /* default port */
+int keep_alive = 1; /* boolean solange zugehört wird */
+int data_length;  /* länge der ankommenden daten */
+char* buffer;  /* Buffer für ankommende Daten */
+char server_adress[] = "127.0.0.1";  /* Default server adresse */
+int udpSocket;  /* Udp Socket */
 
-int gpgme_global_error = 0;
-
-gpgme_ctx_t ctx;
-gpgme_error_t err;
-gpgme_data_t in, result;
-gpgme_data_t plain;
-gpgme_verify_result_t verify_result;
-gpgme_signature_t sig;
+gpgme_ctx_t ctx;  /* Context für GPGME */
+gpgme_error_t err;  /* Error Code */
+gpgme_data_t in;  /* Data Input */
+gpgme_data_t plain;  /* Plaintext of Message */
+gpgme_verify_result_t verify_result;  /* The verify of the Signed Message */
+gpgme_signature_t sig;  /* The signature */
 int tnsigs, nsigs;
 
 void gpgInit(){
