@@ -130,7 +130,7 @@ void gpgCheckSign() {
         	fail_if_err (err);
 	
 	printf("Signatur Check\n");	
-	if(verify_result->signatures->status==GPG_ERR_NO_ERROR){
+	if(gpg_error_code(verify_result->signatures->status)==GPG_ERR_NO_ERROR){
 		printf("Die Signatur ist VALID\n");
 	}
 	else{
