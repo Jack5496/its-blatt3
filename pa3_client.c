@@ -92,8 +92,14 @@ void signText(){
         fail_if_err (gpgme_err_code_from_errno (errno));
 
    printf("######### START ######\n\n"); 
-    ret = gpgme_data_read (out, signature, 65536)) > 0);
-    printf("%s\n",signature);
+    // Read the contents of "out" and place it into buf
+    while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0) {
+        // Write the contents of "buf" to the console
+        fwrite (buf, ret, 1, stdout);
+    }
+
+    fwrite ("\n", 1, 1, stdout);
+
    printf("######### END ######\n\n"); 
     
     // Error handling
@@ -208,4 +214,3 @@ int main(int argc, char **argv){
  
     return 0;
 }
-
