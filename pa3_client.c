@@ -134,7 +134,7 @@ void signText(char* username,char* message,char* signaturePointer){
     gpgme_data_seek(out,0,SEEK_SET); /* Setze Pointer auf den Anfang */
 
     /* Hole die Signatur aus out mit der länge und release out */
-    signaturePointer = gpgme_data_release_and_get_mem(out,&signature_length);
+    signature = gpgme_data_release_and_get_mem(out,&signature_length);
      
      /* Release Input */
     gpgme_data_release (in);
@@ -199,7 +199,7 @@ int main(int argc, char **argv){
      }
          
      /*Send message to server*/
-     sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
+     sendto(clientSocket,signature,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
 
      free(signature);
          
