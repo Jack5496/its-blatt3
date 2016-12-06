@@ -201,13 +201,13 @@ int main(int argc, char **argv){
      signature = malloc(sizeof(char)*65536);
      signaturePointer = signature;
      /*Sign message*/
-     signText(signaturePointer);
+     //signText(signaturePointer);
      for(i=0;i<signature_length;i++){
          printf("%c",signature[i]);
      }
          
      /*Send message to server*/
-     //sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
+     sendto(clientSocket,signaturePointer,signature_length,0,(struct sockaddr *)&serverAddr,addr_size);
 
      free(signature);
          
