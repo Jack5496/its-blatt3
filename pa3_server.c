@@ -130,29 +130,15 @@ void gpgCheckSign() {
         	fail_if_err (err);
 	
     
-	
-
 	// Check if the verify_result object has signatures
 	if (verify_result && verify_result->signatures) {
-		// Iterate through the signatures in the verify_result object
-		for (nsigs=0, sig=verify_result->signatures; sig; sig = sig->next, nsigs++) {
-			fprintf(stdout, "Signature made with Key: %s\n", sig->fpr);
-			fprintf(stdout, "Created: %lu; Expires %lu\n", sig->timestamp, sig->exp_timestamp);
-			char *validity = sig->validity == GPGME_VALIDITY_UNKNOWN? "unknown":
-			    sig->validity == GPGME_VALIDITY_UNDEFINED? "undefined":
-			    sig->validity == GPGME_VALIDITY_NEVER? "never":
-			    sig->validity == GPGME_VALIDITY_MARGINAL? "marginal":
-			    sig->validity == GPGME_VALIDITY_FULL? "full":
-			    sig->validity == GPGME_VALIDITY_ULTIMATE? "ultimate": "[?]";
-			char *sig_status = gpg_err_code (sig->status) == GPG_ERR_NO_ERROR? "GOOD":
-			    gpg_err_code (sig->status) == GPG_ERR_BAD_SIGNATURE? "BAD_SIG":
-			    gpg_err_code (sig->status) == GPG_ERR_NO_PUBKEY? "NO_PUBKEY":
-			    gpg_err_code (sig->status) == GPG_ERR_NO_DATA? "NO_SIGNATURE":
-			    gpg_err_code (sig->status) == GPG_ERR_SIG_EXPIRED? "GOOD_EXPSIG":
-			    gpg_err_code (sig->status) == GPG_ERR_KEY_EXPIRED? "GOOD_EXPKEY": "INVALID";
-			fprintf(stdout, "Validity: %s; Signature Status: %s", validity, sig_status);
-			fwrite("\n", 1, 1, stdout);
-			tnsigs++;
+		sig=verify_result->signatures;
+		
+		int valid = sig->summary==GPGME_SIGSUM_VALID;
+		int green = sig->summary==GPGME_SIGSUM_GREEN;
+		if(valid || green){
+			if(valid){printf("Die Signatur ist VALID\n");	}
+			if(green){printf("Die Signatur ist GREEN\n");	}
 		}
 	}
 
