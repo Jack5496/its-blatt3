@@ -124,6 +124,7 @@ void gpgCheckSign() {
 				keep_alive = 0;
 				return;
 			}
+			gpgme_key_release (key); /* Release den Key */
 				
 			/* Erstelle halter der Länge des Plaintext */
 			size_t plainTextLength;
