@@ -15,7 +15,7 @@ int server_port = 80;
 char username[65536];
 char message[65536];
 int debug = 1;
-
+char* signature;
 char private_key[65536];
 
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv){
 
      nBytes = strlen(message) + 1;
 
-     char* signature = malloc(sizeof(char)*65536);
+     signature = malloc(sizeof(char)*65536);
      /*Sign message*/
      signText();
      
